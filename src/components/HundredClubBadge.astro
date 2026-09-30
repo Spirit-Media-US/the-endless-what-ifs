@@ -3,10 +3,10 @@
 // canonical registry at https://assets.spiritmediapublishing.com/100club-sites.json
 // (synced into src/data/ at build time by scripts/sync-100club-registry.mjs).
 //
-// new-site.mjs replaces REPLACE_SITE_SLUG with the real slug at scaffold time.
+// new-site.mjs replaces the-endless-what-ifs with the real slug at scaffold time.
 import registry from "../data/100club-sites.json";
 
-const SLUG = "REPLACE_SITE_SLUG";
+const SLUG = "the-endless-what-ifs";
 const inClub = registry.some((s) => s.slug === SLUG);
 ---
 

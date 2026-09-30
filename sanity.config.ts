@@ -5,9 +5,9 @@ import { media } from 'sanity-plugin-media';
 import { schemaTypes } from './studio/schemaTypes';
 
 export default defineConfig({
-	name: 'REPLACE_SITE_SLUG',
-	title: 'REPLACE_SITE_TITLE',
-	projectId: 'REPLACE_PROJECT_ID',
+	name: 'the-endless-what-ifs',
+	title: 'The Endless What Ifs',
+	projectId: 'yu45ypx3',
 	dataset: 'production',
 	basePath: '/studio',
 	plugins: [structureTool(), visionTool(), media()],
