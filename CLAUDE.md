@@ -41,7 +41,7 @@ The whole site is about Claire. It (1) shares Claire's story, (2) showcases Hale
 - **Italic means Claire is speaking.** Use italic only for her own words (journals, her quotes). Haley's words are upright with a gold rule.
 - Journals are the one light (paper) surface. Everything else is the warm near-black ground.
 - 988 band is sticky on every page (`CareBand.astro`). Never remove it; it is a HARD row on the score sheet.
-- Journals: Haley wants ALL entries public (Kevin 2026-09-30). 48 entries loaded in notebook order; entries about suicide carry a content note + 988. THREE are held (visible=false, scans NOT uploaded): the two Sept 2024 "in case" letters (to family, to Izaac) and the undated self-harm page that names a method — waiting on Kevin/Haley. Safe messaging: no method detail anywhere.
+- Journals: Haley wants ALL entries public (Kevin 2026-09-30). 48 entries loaded in notebook order; entries about suicide carry a content note + 988. All 48 are public (Kevin 2026-09-30): the two 2024 "in case" letters carry a note; the self-harm page is published with ONLY the method sentence withheld, in the text AND blacked out on the scan (p4-02-redacted.jpg — the unredacted scan was never uploaded; never upload it). Safe messaging: no method detail anywhere.
 - Video: YouTube only, via the click-to-load facade in `Video.astro`. No `<video>` tags.
 
 ## Sanity Content Audit
