@@ -1,12 +1,10 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import '../styles/global.css';
 ---
-<Layout title="Page Not Found">
-  <Fragment slot="head"><meta name="robots" content="noindex, nofollow" /></Fragment>
-  <main class="flex min-h-screen flex-col items-center justify-center px-6 text-center">
-    <h1 class="text-4xl font-bold mb-4">404</h1>
-    <p class="text-lg mb-8">Page not found.</p>
-    <a href="/" class="underline">Go home</a>
-  </main>
+<Layout title="Page not found — The Endless What Ifs" description="This page could not be found." noindex>
+	<section class="wrap-narrow sec sec-first">
+		<p class="eyebrow">404</p>
+		<h1 class="h-display">This page isn’t here</h1>
+		<p class="lede">It may have moved. <a href="/">Return to Claire’s story</a>, or if you need someone to talk to right now, <a href="tel:988">call or text 988</a>.</p>
+	</section>
 </Layout>

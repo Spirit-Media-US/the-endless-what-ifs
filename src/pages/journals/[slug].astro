@@ -1,0 +1,45 @@
+---
+import Picture from '../../components/Picture.astro';
+import Layout from '../../layouts/Layout.astro';
+import { fmtDate, q, sanityClient } from '../../lib/sanity';
+export async function getStaticPaths() {
+	const entries = await sanityClient.fetch(q.journals);
+	return entries.map((e: any, i: number) => ({ params: { slug: e.slug }, props: { e, prev: entries[i - 1] ?? null, next: entries[i + 1] ?? null } }));
+}
+const { e, prev, next } = Astro.props as any;
+const date = fmtDate(e.date);
+---
+<Layout title={`${date}${e.kind ? ` — ${e.kind}` : ''} — Claire’s journals`} description={e.excerpt ?? e.body.slice(0, 150)} ogImage={e.pages?.[0]}>
+	<div class="paper paper-page">
+		<section class="wrap sec sec-first">
+			<p class="eyebrow"><a class="plain" href="/journals/">Her journals</a>{e.series && ` · ${e.series}`}</p>
+			<h1 class="h-sec ink">{date}</h1>
+			{(e.kind || e.title) && <p class="meta">{[e.kind, e.title].filter(Boolean).join(' · ')}</p>}
+		</section>
+		<section class="wrap entry">
+			<div class="journal-body">{e.body}</div>
+			{e.pages?.length > 0 && (
+				<div class="scans">
+					{e.pages.map((p: any) => <figure class="scan"><Picture image={p} widths={[500, 900, 1300]} sizes="(max-width: 820px) 100vw, 460px" /></figure>)}
+					<p class="meta">Claire’s original page{e.pages.length > 1 ? 's' : ''}</p>
+				</div>
+			)}
+		</section>
+		<nav class="wrap sec pager ink-sec" aria-label="Journal entries">
+			{prev ? <a href={`/journals/${prev.slug}/`}><span class="meta">Earlier</span><span class="h-card">{fmtDate(prev.date)}</span></a> : <span />}
+			{next ? <a class="r" href={`/journals/${next.slug}/`}><span class="meta">Later</span><span class="h-card">{fmtDate(next.date)}</span></a> : <span />}
+		</nav>
+	</div>
+</Layout>
+<style>
+	.paper-page { padding-bottom: 40px; margin-bottom: -40px; }
+	.plain { color: inherit; text-decoration: none; }
+	.ink { color: var(--ink); }
+	.entry { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 460px); gap: 56px; align-items: start; }
+	.scans { display: flex; flex-direction: column; gap: 18px; }
+	.ink-sec { border-top-color: rgba(42,33,29,.14); margin-top: 40px; }
+	.pager { flex-direction: row; justify-content: space-between; }
+	.pager a { display: flex; flex-direction: column; gap: 4px; color: var(--ink); text-decoration: none; }
+	.pager .r { text-align: right; }
+	@media (max-width: 820px) { .entry { grid-template-columns: 1fr; gap: 32px; } }
+</style>

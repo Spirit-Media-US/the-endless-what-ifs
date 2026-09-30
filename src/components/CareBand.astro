@@ -1,0 +1,10 @@
+---
+interface Props { headline?: string; text?: string }
+const { headline = 'Call or text 988', text = 'Suicide & Crisis Lifeline · free, confidential, 24/7' } = Astro.props;
+---
+<aside class="care" aria-label="Crisis support">
+	<div class="wrap">
+		<span><a class="lifeline" href="tel:988"><b>{headline}</b></a> <span class="care-sub">· {text}</span></span>
+		<a href="/help/">More help &rarr;</a>
+	</div>
+</aside>

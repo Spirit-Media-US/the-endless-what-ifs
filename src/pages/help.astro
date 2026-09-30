@@ -1,0 +1,48 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { q, sanityClient } from '../lib/sanity';
+const resources = await sanityClient.fetch(q.resources);
+const groups = ['Everyone', 'Young people', 'Parents & families', 'After a loss'];
+---
+<Layout title="Find help — The Endless What Ifs" description="If you or someone you love is struggling, help is available right now. Call or text 988, the Suicide & Crisis Lifeline.">
+	<section class="wrap sec sec-first">
+		<p class="eyebrow">Find help</p>
+		<h1 class="h-display">You don’t have to carry this alone</h1>
+		<p class="lede">If you are thinking about suicide, or you are worried about someone, reach out now. It is free, confidential and open every hour of every day. If someone is in immediate danger, call 911.</p>
+		<div class="now">
+			<a class="btn" href="tel:988">Call 988</a>
+			<a class="btn btn-ghost" href="sms:988">Text 988</a>
+			<a class="btn btn-ghost" href="https://988lifeline.org/chat/" rel="noopener" target="_blank">Chat online</a>
+		</div>
+	</section>
+	{groups.map((g) => {
+		const list = resources.filter((r: any) => (r.audience ?? 'Everyone') === g);
+		return list.length > 0 && (
+			<section class="wrap sec">
+				<p class="eyebrow">{g === 'Everyone' ? 'For anyone' : `For ${g.toLowerCase()}`}</p>
+				<div class="rgrid">
+					{list.map((r: any) => (
+						<div class="res">
+							<span class="t">{r.name}</span>
+							{r.description && <p class="muted">{r.description}</p>}
+							<p class="ways">
+								{r.call && <span><b>Call</b> <a href={`tel:${r.call.replace(/[^0-9+]/g, '')}`}>{r.call}</a></span>}
+								{r.text && <span><b>Text</b> {r.text}</span>}
+								{r.url && <a href={r.url} rel="noopener" target="_blank">{r.url.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '')}</a>}
+							</p>
+						</div>
+					))}
+				</div>
+			</section>
+		);
+	})}
+	<section class="wrap sec">
+		<p class="eyebrow">Your story matters</p>
+		<h2 class="h-sec">Share yours</h2>
+		<p class="lede">If Claire’s story has touched your life, Haley would be honored to hear from you. <a href="/your-story/">Share your story</a>.</p>
+	</section>
+</Layout>
+<style>
+	.now { display: flex; flex-wrap: wrap; gap: 12px; }
+	.rgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 16px; }
+</style>

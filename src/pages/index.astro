@@ -1,61 +1,134 @@
 ---
-// SMP Site Index — 100 Club hero scaffold.
-// See /home/deploy/claude-config/rules/performance-gate.md for the trait list.
-// Keep this hero pattern intact when wiring real Sanity content:
-//   * srcset (mobile <=800w + desktop), fm=webp&q=80
-//   * Fragment slot=head preload with fetchpriority high
-//   * explicit width / height on the img tag
-//   * no animation hooks on the first hero region
+// Home — Claire's story. The whole site is about Claire; this page IS her story,
+// and opens onto the rooms behind it (work, journals, book, help).
+// Hero keeps all perf traits: srcset ≤800w mobile entry, preload + fetchpriority,
+// explicit width/height, no animation on the first section.
+import Picture from '../components/Picture.astro';
+import Video from '../components/Video.astro';
 import Layout from '../layouts/Layout.astro';
-import '../styles/global.css';
-// import { sanityClient, urlFor } from '../lib/sanity.ts';
+import { fmtDate, img, q, rich, sanityClient } from '../lib/sanity';
 
-// const hero = await sanityClient.fetch(`*[_type == "homepage"][0].heroImage`);
-// const heroMobile  = urlFor(hero).width(640).format('webp').quality(80).url();
-// const heroDesktop = urlFor(hero).width(1200).format('webp').quality(80).url();
-const heroMobile  = '/hero-placeholder-640.webp';
-const heroDesktop = '/hero-placeholder-1200.webp';
+const home = await sanityClient.fetch(q.home);
+const hero = img(home?.heroImage, [600, 900, 1400]);
+const signoff = img(home?.signoff, [540, 1080]);
+const fp = home?.featuredPerformance;
+const person = {
+	'@context': 'https://schema.org',
+	'@type': 'Person',
+	name: 'Claire Rose Goodwin',
+	birthDate: '2003-08-05',
+	deathDate: '2024-12-14',
+	jobTitle: 'Opera singer',
+	alumniOf: { '@type': 'CollegeOrUniversity', name: 'Florida State University College of Music' },
+};
 ---
+<Layout title={home?.seo?.title ?? 'Claire Rose Goodwin — The Endless What Ifs'} description={home?.seo?.description} ogImage={home?.heroImage} jsonLd={person}>
+	<Fragment slot="head">
+		{hero && <link rel="preload" as="image" imagesrcset={hero.srcset} imagesizes="(max-width: 800px) 100vw, 1400px" fetchpriority="high" />}
+	</Fragment>
 
-<Layout title="Site Name — Tagline">
-  <Fragment slot="head">
-    <link rel="preconnect" href="https://cdn.sanity.io" crossorigin />
-    <link
-      rel="preload"
-      as="image"
-      href={heroDesktop}
-      imagesrcset={`${heroMobile} 640w, ${heroDesktop} 1200w`}
-      imagesizes="(max-width: 640px) 640px, 1200px"
-      fetchpriority="high"
-    />
-  </Fragment>
+	<!-- HERO — no animation hooks (Trait 7) -->
+	<section class="hero">
+		{hero && (
+			<div class="hero-img">
+				<img src={hero.src} srcset={hero.srcset} sizes="(max-width: 800px) 100vw, 1400px" width={hero.width} height={hero.height} alt={hero.alt} fetchpriority="high" loading="eager" decoding="async" />
+			</div>
+		)}
+		<div class="wrap hero-inner">
+			{home?.heroEyebrow && <p class="eyebrow">{home.heroEyebrow}</p>}
+			<h1 class="hero-name">{home?.heroName ?? 'Claire Rose Goodwin'}</h1>
+			{home?.heroDates && <p class="hero-dates">{home.heroDates}</p>}
+			<hr class="rule-gold" />
+			{home?.heroLine && <p class="hero-line">{home.heroLine}</p>}
+		</div>
+	</section>
 
-  <main>
-    <!-- HERO — first section: NO data-aos, NO reveal wrapper, NO transform-on-mount (Trait 7) -->
-    <section class="hero-section" style="padding: 48px 24px;">
-      <div class="container-site" style="display: grid; gap: 24px; max-width: 1200px; margin: 0 auto;">
-        <img
-          src={heroDesktop}
-          srcset={`${heroMobile} 640w, ${heroDesktop} 1200w`}
-          sizes="(max-width: 640px) 640px, 1200px"
-          width="1200"
-          height="675"
-          alt="Replace with descriptive alt text for the hero image"
-          fetchpriority="high"
-          loading="eager"
-          decoding="async"
-          style="width: 100%; height: auto; max-width: 1200px;"
-        />
-        <h1 style="font-size: clamp(32px, 5vw, 56px); line-height: 1.15; margin: 0;">
-          Site Name
-        </h1>
-        <p style="font-size: 18px; max-width: 65ch; margin: 0;">
-          Replace this scaffold with the real homepage hero. Keep the srcset / preload / width-height /
-          fetchpriority pattern intact — that combination is what hits 100 Club mobile out of the gate.
-        </p>
-      </div>
-    </section>
+	{signoff && (
+		<section class="wrap signoff">
+			<img src={signoff.src} srcset={signoff.srcset} sizes="(max-width: 700px) 90vw, 640px" width={signoff.width} height={signoff.height} alt={signoff.alt} loading="lazy" decoding="async" />
+			<p class="meta">Claire’s sign-off, in her own hand · Morning journal, May 5, 2024</p>
+		</section>
+	)}
 
-    <!-- Below-fold regions may use reveal-on-scroll wrappers. Keep animation hooks OFF the hero. -->
-  </main>
+	{home?.heroImage?.caption && (
+		<section class="wrap sec">
+			<figure class="quote quote-haley">
+				<blockquote class="q">{home.heroImage.caption}</blockquote>
+				<figcaption class="by">Haley Goodwin, Claire’s mother</figcaption>
+			</figure>
+		</section>
+	)}
+
+	{home?.chapters?.map((c: any, i: number) => (
+		<section class={`wrap sec chapter ${c.image ? (i % 2 ? "flip" : "") : "solo"}`}>
+			<div class="chapter-text">
+				{c.eyebrow && <p class="eyebrow">{c.eyebrow}</p>}
+				<h2 class="h-sec">{c.heading}</h2>
+				<div class="prose" set:html={rich(c.body)} />
+				{c.quote && (
+					<figure class="quote">
+						<blockquote class="q">{c.quote}</blockquote>
+						{c.quoteSource && <figcaption class="by">{c.quoteSource}</figcaption>}
+					</figure>
+				)}
+			</div>
+			{c.image && (
+				<figure class="chapter-img">
+					<div class="frame"><Picture image={c.image} widths={[480, 800, 1100]} sizes="(max-width: 820px) 100vw, 480px" /></div>
+					{c.image.caption && <figcaption class="cap">{c.image.caption}</figcaption>}
+				</figure>
+			)}
+		</section>
+	))}
+
+	{fp && (
+		<section class="wrap sec">
+			<p class="eyebrow">Hear her</p>
+			<h2 class="h-sec">{fp.title}</h2>
+			<Video title={fp.title} youtubeId={fp.youtubeId} poster={fp.poster} meta={[fmtDate(fp.programme?.date ?? fp.date), fp.duration].filter(Boolean).join(' · ')} />
+			<p class="lede">{fp.programme?.title ? `From ${fp.programme.title}. ` : ''}<a href={`/work/${fp.slug}/`}>About this performance</a> · <a href="/work/">All of her work</a></p>
+		</section>
+	)}
+
+	<section class="wrap sec">
+		<p class="eyebrow">Keep going</p>
+		<h2 class="h-sec">There is more of her here</h2>
+		<div class="doors">
+			<a class="door" href="/work/"><span class="n">Her work</span><span class="t">Performances &amp; stages</span><span class="d">Her junior recital, song by song, and the operas and festivals she sang in.</span><span class="go">Enter &rarr;</span></a>
+			<a class="door" href="/journals/"><span class="n">Her voice</span><span class="t">The journals</span><span class="d">Pages from the journals she kept in 2024, in her own hand.</span><span class="go">Read &rarr;</span></a>
+			<a class="door" href="/book/"><span class="n">The book</span><span class="t">The Endless What Ifs</span><span class="d">Haley Goodwin’s book about Claire’s life, and what she wants every family to know.</span><span class="go">Discover &rarr;</span></a>
+			<a class="door" href="/help/"><span class="n">Take it further</span><span class="t">Find help, share a story</span><span class="d">Support for anyone who is struggling, and for the people who love them.</span><span class="go">Find help &rarr;</span></a>
+		</div>
+	</section>
 </Layout>
+
+<style>
+	.hero { position: relative; min-height: 420px; display: flex; align-items: flex-end; overflow: hidden; padding: 120px 0 72px; }
+	@media (min-width: 768px) { .hero { min-height: 82vh; } }
+	.hero-img { position: absolute; inset: 0; }
+	.hero-img img { width: 100%; height: 100%; object-fit: cover; object-position: 62% 22%; }
+	.hero-img::after { content: ""; position: absolute; inset: 0; background:
+		radial-gradient(80% 66% at 66% 40%, rgba(14,10,9,0) 0%, rgba(14,10,9,.25) 52%, rgba(14,10,9,.8) 86%, var(--ground) 100%),
+		linear-gradient(to right, rgba(14,10,9,.94) 0%, rgba(14,10,9,.74) 26%, rgba(14,10,9,.2) 56%, rgba(14,10,9,0) 78%),
+		linear-gradient(to bottom, rgba(14,10,9,.5), rgba(14,10,9,0) 30%, rgba(14,10,9,.5) 84%, var(--ground) 99%); }
+	.hero-inner { position: relative; width: 100%; display: flex; flex-direction: column; gap: 20px; }
+	.hero-name { font-family: var(--display); font-weight: 300; font-size: clamp(48px, 9vw, 100px); line-height: .96; letter-spacing: -.015em; max-width: 11ch; }
+	.hero-dates { font-family: var(--display); font-size: 23px; color: var(--gold); }
+	.hero-line { color: var(--muted); max-width: 46ch; font-size: 16.5px; }
+	@media (max-width: 767px) {
+		.hero-img img { object-position: 58% 18%; }
+		.hero-img::after { background: linear-gradient(to bottom, rgba(14,10,9,.2), rgba(14,10,9,.35) 45%, rgba(14,10,9,.9) 78%, var(--ground) 100%); }
+	}
+	.signoff { display: flex; flex-direction: column; align-items: center; gap: 14px; padding-top: 56px; padding-bottom: 20px; text-align: center; }
+	.signoff img { width: min(640px, 100%); height: auto; }
+	.chapter { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 400px); gap: 48px; align-items: start; }
+	.chapter.flip { grid-template-columns: minmax(0, 400px) minmax(0, 1fr); }
+	.chapter.flip .chapter-img { order: -1; }
+	.chapter.solo { grid-template-columns: 1fr; }
+	.chapter-text { display: flex; flex-direction: column; gap: 22px; }
+	.chapter-img { margin: 0; display: flex; flex-direction: column; gap: 10px; }
+	@media (max-width: 820px) {
+		.chapter, .chapter.flip { grid-template-columns: 1fr; gap: 28px; }
+		.chapter.flip .chapter-img { order: 0; }
+	}
+</style>

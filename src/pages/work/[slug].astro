@@ -1,0 +1,92 @@
+---
+// One route, two templates: a programme (recital) page, or a single performance page.
+import Picture from '../../components/Picture.astro';
+import Video from '../../components/Video.astro';
+import Layout from '../../layouts/Layout.astro';
+import { fmtDate, q, rich, sanityClient } from '../../lib/sanity';
+
+export async function getStaticPaths() {
+	const [programmes, performances] = await Promise.all([sanityClient.fetch(q.programmes), sanityClient.fetch(q.performances)]);
+	return [
+		...programmes.map((p: any) => ({ params: { slug: p.slug }, props: { kind: 'programme', doc: p } })),
+		...performances.map((p: any) => {
+			const siblings = programmes.find((g: any) => g.slug === p.programme?.slug)?.performances ?? [];
+			const i = siblings.findIndex((s: any) => s.slug === p.slug);
+			return { params: { slug: p.slug }, props: { kind: 'performance', doc: p, prev: siblings[i - 1] ?? null, next: siblings[i + 1] ?? null } };
+		}),
+	];
+}
+const { kind, doc, prev, next } = Astro.props as any;
+const when = fmtDate(doc.programme?.date ?? doc.date);
+const ld = kind === 'performance'
+	? { '@context': 'https://schema.org', '@type': 'MusicRecording', name: doc.title, byArtist: { '@type': 'Person', name: 'Claire Rose Goodwin' }, ...(doc.composer ? { recordingOf: { '@type': 'MusicComposition', name: doc.title, composer: { '@type': 'Person', name: doc.composer } } } : {}), inLanguage: doc.language }
+	: { '@context': 'https://schema.org', '@type': 'Event', name: doc.title, startDate: doc.date, location: doc.venue ? { '@type': 'Place', name: doc.venue } : undefined, performer: { '@type': 'Person', name: 'Claire Rose Goodwin' } };
+---
+{kind === 'programme' ? (
+	<Layout title={doc.seo?.title ?? `${doc.title} — Claire Rose Goodwin`} description={doc.seo?.description ?? doc.summary} ogImage={doc.image} jsonLd={ld}>
+		<section class="wrap sec sec-first">
+			<p class="eyebrow"><a href="/work/">Her work</a> · Programme</p>
+			<h1 class="h-display">{doc.title}</h1>
+			<p class="meta">{[fmtDate(doc.date), doc.venue].filter(Boolean).join(' · ')}</p>
+			{doc.summary && <p class="lede">{doc.summary}</p>}
+		</section>
+		{doc.image && <section class="wrap"><figure class="frame"><Picture image={doc.image} eager widths={[640, 1040, 1600]} /></figure></section>}
+		<section class="wrap sec">
+			<p class="eyebrow">The programme</p>
+			<div class="programme">
+				{doc.performances.map((s: any, i: number) => (
+					<a class="prog-row" href={`/work/${s.slug}/`}>
+						<span class="prog-no">{String(i + 1).padStart(2, '0')}</span>
+						<span class="prog-thumb">{s.poster && <Picture image={s.poster} widths={[240]} ratio={9 / 16} sizes="120px" />}</span>
+						<span><span class="prog-title">{s.title}</span><br /><span class="prog-sub">{[s.composer, s.duration].filter(Boolean).join(' · ')}</span></span>
+						<span class="prog-lang">{s.language}</span>
+					</a>
+				))}
+			</div>
+			{doc.performers?.length > 0 && (
+				<p class="muted">{doc.performers.map((p: any) => `${p.name}${p.role ? `, ${p.role}` : ''}`).join(' · ')}</p>
+			)}
+			{doc.notes && <div class="prose" set:html={rich(doc.notes)} />}
+		</section>
+	</Layout>
+) : (
+	<Layout title={doc.seo?.title ?? `${doc.title} — Claire Rose Goodwin`} description={doc.seo?.description ?? `Claire Goodwin sings ${doc.title}${doc.composer ? ` by ${doc.composer}` : ''}${doc.programme?.title ? `, from her ${doc.programme.title.toLowerCase()}` : ''}.`} ogImage={doc.poster} jsonLd={ld}>
+		<section class="wrap sec sec-first perf-head">
+			<p class="eyebrow"><a href="/work/">Her work</a>{doc.programme && <> · <a href={`/work/${doc.programme.slug}/`}>{doc.programme.title}</a></>}</p>
+			<h1 class="h-display">{doc.title}</h1>
+			<p class="meta">{[doc.composer, doc.language, when].filter(Boolean).join(' · ')}</p>
+		</section>
+		<section class="wrap">
+			<Video title={doc.title} youtubeId={doc.youtubeId} poster={doc.poster} meta={[when, doc.duration].filter(Boolean).join(' · ')} eager />
+			{doc.withPerformers && <p class="cap perf-with">With {doc.withPerformers}</p>}
+		</section>
+		{(doc.originalText || doc.translation) && (
+			<section class="wrap sec">
+				<p class="eyebrow">The words she sang</p>
+				<div class="texts">
+					{doc.originalText && <div><p class="meta">{doc.language ?? 'Original'}</p><p class="sung">{doc.originalText}</p></div>}
+					{doc.translation && <div><p class="meta">English</p><p class="sung tr">{doc.translation}</p>{doc.translationCredit && <p class="cap">{doc.translationCredit}</p>}</div>}
+				</div>
+			</section>
+		)}
+		{doc.notes && <section class="wrap sec"><div class="prose" set:html={rich(doc.notes)} /></section>}
+		<nav class="wrap sec pager" aria-label="Programme">
+			{prev ? <a href={`/work/${prev.slug}/`}><span class="meta">Previous</span><span class="h-card">{prev.title}</span></a> : <span />}
+			{next ? <a class="r" href={`/work/${next.slug}/`}><span class="meta">Next</span><span class="h-card">{next.title}</span></a> : <span />}
+		</nav>
+	</Layout>
+)}
+
+<style>
+	.perf-head { padding-bottom: 36px; }
+	.eyebrow a { color: inherit; text-decoration: none; }
+	.perf-with { margin-top: 10px; }
+	.texts { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 36px; }
+	.texts > div { display: flex; flex-direction: column; gap: 12px; }
+	.sung { white-space: pre-line; font-family: var(--display); font-size: 21px; line-height: 1.55; color: var(--cream); }
+	.sung.tr { color: #DCD0C4; }
+	.pager { flex-direction: row; justify-content: space-between; }
+	.pager a { display: flex; flex-direction: column; gap: 4px; color: var(--cream); text-decoration: none; }
+	.pager a:hover .h-card { color: var(--gold); }
+	.pager .r { text-align: right; }
+</style>

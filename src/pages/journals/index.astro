@@ -1,0 +1,35 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { fmtDate, q, sanityClient } from '../../lib/sanity';
+const entries = await sanityClient.fetch(q.journals);
+const months = [...new Set(entries.map((e: any) => e.date.slice(0, 7)))] as string[];
+---
+<Layout title="Her journals — Claire Rose Goodwin" description="Pages from the journals Claire Goodwin kept in 2024 — her mornings, her nights, her goals and her values, in her own words.">
+	<div class="paper paper-page">
+		<section class="wrap sec sec-first">
+			<p class="eyebrow">Her voice</p>
+			<h1 class="h-display">The journals</h1>
+			<p class="lede-ink">In the spring of 2024, after finishing her junior year, Claire began keeping a morning journal and a night journal. She wrote down her goals, her small victories, the things she was thankful for — and signed off, again and again, <em>Now, go create your own reality!</em> These pages were chosen by her mother, Haley, and appear exactly as Claire wrote them.</p>
+		</section>
+		{months.map((m) => (
+			<section class="wrap sec ink-sec">
+				<p class="eyebrow">{fmtDate(`${m}-01`, { month: 'long', year: 'numeric' })}</p>
+				<div class="jgrid">
+					{entries.filter((e: any) => e.date.startsWith(m)).map((e: any) => (
+						<a class="journal-card" href={`/journals/${e.slug}/`}>
+							<span class="meta">{fmtDate(e.date)}{e.kind ? ` · ${e.kind}` : ''}</span>
+							{e.title && <span class="h-card">{e.title}</span>}
+							<span class="x">{e.excerpt ?? e.body.split('\n')[0].slice(0, 140)}</span>
+						</a>
+					))}
+				</div>
+			</section>
+		))}
+	</div>
+</Layout>
+<style>
+	.paper-page { padding-bottom: 60px; margin-bottom: -40px; }
+	.lede-ink { max-width: var(--measure); color: var(--ink-soft); font-size: 17px; }
+	.ink-sec { border-top-color: rgba(42,33,29,.14); }
+	.jgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; }
+</style>

@@ -1,0 +1,26 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { q, sanityClient } from '../../lib/sanity';
+const stages = await sanityClient.fetch(q.stages);
+---
+<Layout title="Her stages — Claire Rose Goodwin" description="The choirs, operas and festivals Claire Goodwin sang in, from Clayton, North Carolina to Florida State, Opera Maine, Tuscany and New York.">
+	<section class="wrap sec sec-first">
+		<p class="eyebrow"><a class="plain" href="/work/">Her work</a> · Stages</p>
+		<h1 class="h-display">Where she sang</h1>
+	</section>
+	<section class="wrap">
+		<div class="timeline">
+			{stages.map((s: any) => (
+				<div class="tl">
+					<span class="y">{[s.year, s.kind].filter(Boolean).join(' · ')}</span>
+					<span class="t">{s.title}</span>
+					{s.place && <span class="p">{s.place}</span>}
+					{s.role && <span class="p">{s.role}</span>}
+					{s.description && <p class="p">{s.description}</p>}
+					{s.performance && <a href={`/work/${s.performance.slug}/`}>Watch {s.performance.title} &rarr;</a>}
+				</div>
+			))}
+		</div>
+	</section>
+</Layout>
+<style>.plain { color: inherit; text-decoration: none; }</style>

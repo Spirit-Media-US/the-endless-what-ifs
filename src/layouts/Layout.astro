@@ -1,119 +1,111 @@
 ---
-// SMP Site Layout — 100 Club ready out of the box.
-//
-// This layout already implements the structural pieces of every trait:
-//   - <slot name="head"> for per-page hero preload (Trait 2)
-//   - System-font fallback by default (Trait 4 alternative — replace with
-//     R2 self-hosted woff2 preloads via /home/deploy/bin/gfonts-to-r2.mjs
-//     once a brand font is chosen)
-//   - Deferred third-party JS pattern below (Trait 5) — wire GA/GTM by
-//     filling in the GTM_ID const and uncommenting the script
-//   - public/_headers ships CSP + X-Robots-Tag + Link: Early Hints
-//   - astro.config has inlineStylesheets:'auto' (Trait 6)
-//
-// HundredClubBadge auto-renders once this site's slug is added to
-// https://assets.spiritmediapublishing.com/100club-sites.json.
+// The Endless What Ifs — site layout.
+// Perf traits: hero preload via <slot name="head"> (2), R2 fonts (4),
+// no third-party JS (5), inlineStylesheets auto (6).
+import CareBand from '../components/CareBand.astro';
 import HundredClubBadge from '../components/HundredClubBadge.astro';
+import { img, q, sanityClient } from '../lib/sanity';
+import '../styles/global.css';
 
 interface Props {
-  title: string;
-  description?: string;
-  ogImage?: string;
+	title: string;
+	description?: string;
+	ogImage?: any;
+	jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+	noindex?: boolean;
 }
-const {
-  title,
-  description = 'Replace this default description in src/layouts/Layout.astro',
-  ogImage,
-} = Astro.props;
+const settings = await sanityClient.fetch(q.settings);
+const SITE_NAME = settings?.title ?? 'The Endless What Ifs';
+const { title, description = settings?.description ?? '', ogImage, jsonLd, noindex = false } = Astro.props;
+const share = img(ogImage ?? settings?.shareImage, [1200], 630 / 1200);
 const currentYear = new Date().getFullYear();
 const siteOrigin = (Astro.site && Astro.site.toString().replace(/\/$/, '')) || '';
 const canonicalURL = siteOrigin ? new URL(Astro.url.pathname, siteOrigin).href : Astro.url.pathname;
-
-// Replace SITE_NAME with the human-readable site name once it's known.
-const SITE_NAME = 'SITE_NAME';
+const path = Astro.url.pathname;
+const nav = [
+	{ href: '/', label: 'Her story' },
+	{ href: '/work/', label: 'Her work' },
+	{ href: '/journals/', label: 'Her journals' },
+	{ href: '/book/', label: 'The book' },
+	{ href: '/help/', label: 'Find help' },
+];
+const current = (href: string) => (href === '/' ? path === '/' : path.startsWith(href));
+const website = { '@context': 'https://schema.org', '@type': 'WebSite', name: SITE_NAME, url: siteOrigin || undefined };
+const ld = [website, ...(jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [])];
 ---
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content={description} />
-    <title>{title}</title>
-    <link rel="canonical" href={canonicalURL} />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>{title}</title>
+		<meta name="description" content={description} />
+		<link rel="canonical" href={canonicalURL} />
+		{noindex && <meta name="robots" content="noindex" />}
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="theme-color" content="#0E0A09" />
+		<link rel="preconnect" href="https://cdn.sanity.io" crossorigin />
+		<link rel="preload" as="font" type="font/woff2" href="https://assets.spiritmediapublishing.com/fonts/cormorant/cormorant-300.woff2" crossorigin />
+		<link rel="preload" as="font" type="font/woff2" href="https://assets.spiritmediapublishing.com/fonts/source-sans-3/source-sans-3-400.woff2" crossorigin />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		{share && <meta property="og:image" content={share.src} />}
+		<meta property="og:url" content={canonicalURL} />
+		<meta property="og:type" content="website" />
+		<meta name="twitter:card" content="summary_large_image" />
+		<script type="application/ld+json" set:html={JSON.stringify(ld)} />
+		<slot name="head" />
+	</head>
+	<body>
+		<a class="skip" href="#main">Skip to content</a>
+		<CareBand headline={settings?.crisisHeadline} text={settings?.crisisText} />
+		<header class="site-head">
+			<div class="wrap">
+				<a class="brand" href="/">The Endless <i>What Ifs</i></a>
+				<button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
+				<nav class="nav" id="site-nav" aria-label="Main">
+					{nav.map((n) => <a href={n.href} aria-current={current(n.href) ? 'page' : undefined}>{n.label}</a>)}
+				</nav>
+			</div>
+		</header>
 
-    <!-- Font preloads (Trait 4) — uncomment and replace once gfonts-to-r2.mjs adds the family.
-         Self-hosted from R2: assets.spiritmediapublishing.com/fonts/<slug>/<slug>-<weight>.woff2.
-         Keep to 2-3 preloads max. Every paired @font-face block in global.css must carry
-         font-display: optional. Until a webfont is wired, system fonts handle Trait 4 by alternative. -->
-    <!-- <link rel="preload" as="font" type="font/woff2" href="https://assets.spiritmediapublishing.com/fonts/FAMILY/FAMILY-400.woff2" crossorigin /> -->
+		<main id="main">
+			<slot />
+		</main>
 
-    <!-- Critical CSS (Trait 6) — when adding hand-rolled <style is:inline> blocks,
-         wrap their contents in @layer base { ... }. Unlayered rules outrank every
-         Tailwind @layer (theme/base/components/utilities) and silently strip
-         responsive utilities below the fold. Two at-rules stay at top level
-         (CSS spec forbids them inside @layer): font-face declarations and keyframes. -->
-
-    <!-- Open Graph / Twitter -->
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
-    {ogImage && <meta property="og:image" content={ogImage} />}
-    <meta property="og:url" content={canonicalURL} />
-    <meta property="og:type" content="website" />
-    <meta name="twitter:card" content="summary_large_image" />
-
-    <!-- JSON-LD Organization stub — fill in once brand details are confirmed.
-    <script type="application/ld+json" set:html={JSON.stringify({
-      "@context": "https://schema.org",
-      "@type": "Organization",
-      "name": SITE_NAME,
-      "url": siteOrigin,
-      "logo": ogImage,
-    })}></script>
-    -->
-
-    <!-- Per-page <head> additions (hero preload links live here — Trait 2) -->
-    <slot name="head" />
-  </head>
-  <body>
-    <header id="site-header" class="container-site flex items-center justify-between" style="padding: 16px 24px;">
-      <a href="/" style="font-weight: 700;">{SITE_NAME}</a>
-      <nav>
-        <a href="/">Home</a>
-      </nav>
-    </header>
-
-    <slot />
-
-    <footer style="padding: 32px 24px; border-top: 1px solid var(--color-border, #e5e5e5);">
-      <div class="container-site" style="display: flex; flex-direction: column; gap: 8px;">
-        <p style="margin: 0; font-size: 13px;">
-          &copy; {currentYear} {SITE_NAME}. All rights reserved. &bull; Powered by <a href="https://spiritmediapublishing.com">Spirit Media</a>
-          <HundredClubBadge />
-        </p>
-      </div>
-    </footer>
-
-    <!-- Deferred third-party JS pattern (Trait 5) — copy this block when wiring GA/GTM/Calendly/Stripe/etc.
-         Loads only after first user interaction (or 8s fallback) so it never blocks the LCP path.
-    <script is:inline>
-      const loadAnalytics = () => {
-        if (window._smpAnalyticsLoaded) return;
-        window._smpAnalyticsLoaded = true;
-        const s = document.createElement('script');
-        s.src = 'https://www.googletagmanager.com/gtag/js?id=GTM_ID';
-        s.async = true;
-        document.head.appendChild(s);
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){ window.dataLayer.push(arguments); }
-        gtag('js', new Date());
-        gtag('config', 'GTM_ID');
-      };
-      ['scroll', 'click', 'touchstart', 'keydown', 'mousemove'].forEach((e) =>
-        window.addEventListener(e, loadAnalytics, { once: true, passive: true })
-      );
-      setTimeout(loadAnalytics, 8000);
-    </script>
-    -->
-  </body>
+		<footer class="site-foot">
+			<div class="wrap">
+				<div class="cols">
+					<div class="foot-lead">
+						<p class="ded">{settings?.footerDedication ?? 'In memory of Claire Rose Goodwin, 2003–2024'}</p>
+						<p>If you are struggling, you are not alone. <a href="tel:988">Call or text 988</a>, any hour.</p>
+					</div>
+					<ul>
+						<li><a href="/">Her story</a></li>
+						<li><a href="/work/">Her work</a></li>
+						<li><a href="/journals/">Her journals</a></li>
+						<li><a href="/book/">The book</a></li>
+					</ul>
+					<ul>
+						<li><a href="/help/">Find help</a></li>
+						<li><a href="/your-story/">Share your story</a></li>
+						<li><a href="/haley/">Haley Goodwin — press &amp; speaking</a></li>
+						<li><a href="/privacy/">Privacy</a></li>
+					</ul>
+				</div>
+				<p class="copyright">
+					&copy; {currentYear} {SITE_NAME}. All rights reserved. &bull; Powered by <a href="https://spiritmediapublishing.com">Spirit Media</a>
+					<HundredClubBadge />
+				</p>
+			</div>
+		</footer>
+		<script>
+			const t = document.querySelector<HTMLButtonElement>('.nav-toggle');
+			const n = document.getElementById('site-nav');
+			t?.addEventListener('click', () => {
+				const open = n?.classList.toggle('open') ?? false;
+				t.setAttribute('aria-expanded', String(open));
+			});
+		</script>
+	</body>
 </html>

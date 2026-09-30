@@ -1,0 +1,33 @@
+---
+// YouTube facade: poster first, iframe only on click (keeps page weight off the
+// first load and never uses a <video> tag — SMP media rule).
+import Picture from './Picture.astro';
+interface Props { title: string; youtubeId?: string; poster?: any; meta?: string; eager?: boolean }
+const { title, youtubeId, poster, meta, eager = false } = Astro.props;
+---
+<div class="video-frame" data-yt={youtubeId}>
+	{poster && <Picture image={poster} widths={[640, 1040, 1600]} ratio={9 / 16} eager={eager} />}
+	<div class="shade"></div>
+	{youtubeId ? (
+		<button type="button" aria-label={`Play ${title}`}>
+			<span class="video-meta"><span class="t">{title}</span>{meta && <span class="d">{meta}</span>}</span>
+		</button>
+	) : (
+		<span class="video-meta"><span class="t pending">{title}</span><span class="d">{meta ? `${meta} · ` : ''}Video coming soon</span></span>
+	)}
+</div>
+<script>
+	document.querySelectorAll<HTMLElement>('.video-frame[data-yt]').forEach((el) => {
+		const id = el.dataset.yt;
+		const btn = el.querySelector('button');
+		if (!id || !btn) return;
+		btn.addEventListener('click', () => {
+			const f = document.createElement('iframe');
+			f.src = `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0`;
+			f.title = btn.getAttribute('aria-label') ?? 'Video';
+			f.allow = 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; fullscreen';
+			f.allowFullscreen = true;
+			el.replaceChildren(f);
+		}, { once: true });
+	});
+</script>

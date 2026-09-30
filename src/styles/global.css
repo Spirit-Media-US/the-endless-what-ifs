@@ -1,44 +1,210 @@
 @import "tailwindcss";
 
-/* ─── Design Tokens ───────────────────────────────────────────
-   Replace these with site-specific values.
-   See existing sites for examples:
-   - artsbyjustin: warm/gallery palette
-   - spirit-media-publishing: brand blues
-   - FHB: parchment/ink palette
-──────────────────────────────────────────────────────────────── */
+/* ─── Fonts — self-hosted on R2 (Trait 4) ─────────────────────── */
+@font-face{font-family:'Cormorant';font-style:italic;font-weight:300;font-display:optional;src:url('https://assets.spiritmediapublishing.com/fonts/cormorant/cormorant-300-italic.woff2') format('woff2');}
+@font-face{font-family:'Cormorant';font-style:normal;font-weight:300;font-display:optional;src:url('https://assets.spiritmediapublishing.com/fonts/cormorant/cormorant-300.woff2') format('woff2');}
+@font-face{font-family:'Cormorant';font-style:normal;font-weight:400;font-display:optional;src:url('https://assets.spiritmediapublishing.com/fonts/cormorant/cormorant-400.woff2') format('woff2');}
+@font-face{font-family:'Source Sans 3';font-style:normal;font-weight:400;font-display:optional;src:url('https://assets.spiritmediapublishing.com/fonts/source-sans-3/source-sans-3-400.woff2') format('woff2');}
+@font-face{font-family:'Source Sans 3';font-style:normal;font-weight:600;font-display:optional;src:url('https://assets.spiritmediapublishing.com/fonts/source-sans-3/source-sans-3-600.woff2') format('woff2');}
+
+/* ─── Design tokens — measured from Claire's photographs (mood direction, 14 Aug 2026) ─── */
 :root {
-  --font-sans: system-ui, sans-serif;
-  --font-serif: Georgia, serif;
-  --color-bg: #ffffff;
-  --color-text: #1a1a1a;
-  --color-border: #e5e5e5;
-  --color-accent: #2563eb;
+	color-scheme: dark;
+	--ground: #0E0A09;       /* the recital backdrop */
+	--surface: #181110;
+	--surface-2: #221816;
+	--garnet: #8E3346;       /* FSU garnet family */
+	--garnet-deep: #5B1E2C;  /* the stage crimson */
+	--blush: #C09085;        /* her gown — reserved for Claire */
+	--gold: #CEB888;         /* FSU gold / stage floor */
+	--sand: #B69D80;
+	--cream: #EFE6DA;
+	--muted: #A3948A;
+	--hair: #3A2A26;
+	--paper: #F2EBE0;        /* journals only */
+	--ink: #2A211D;
+	--ink-soft: #5C4E46;
+	--display: 'Cormorant', Georgia, serif;
+	--body: 'Source Sans 3', system-ui, sans-serif;
+	--measure: 64ch;
+	--care-h: 44px;
 }
 
-/* ─── 100 Club cascade rule ────────────────────────────────────
-   When you add hand-rolled critical CSS via <style is:inline> in
-   Layout.astro, wrap the whole block in @layer base { ... }.
-   Unlayered CSS outranks every Tailwind @layer rule (theme/base/
-   components/utilities), which silently strips responsive utilities
-   like lg:grid-cols-N below the fold.
-
-   Two at-rules stay at the top level (CSS spec forbids them inside
-   @layer): font-face declarations and keyframes.
-
-   Diagnostic notes:
-   /home/deploy/.claude/projects/-home-deploy/memory/reference_100club_cascade_rules.md
-──────────────────────────────────────────────────────────────── */
-
-.container-site {
-  width: 100%;
-  max-width: 1200px;
-  margin-inline: auto;
-  padding-inline: 24px;
+@layer base {
+	*, *::before, *::after { box-sizing: border-box; }
+	html { background: var(--ground); }
+	body {
+		margin: 0; background: var(--ground); color: var(--cream);
+		font-family: var(--body); font-weight: 400; font-size: 17px; line-height: 1.65;
+		-webkit-font-smoothing: antialiased;
+	}
+	h1, h2, h3, h4 { margin: 0; font-weight: 400; text-wrap: balance; }
+	p { margin: 0; }
+	img { max-width: 100%; }
+	a { color: var(--gold); text-underline-offset: 3px; }
+	a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible, summary:focus-visible {
+		outline: 2px solid var(--gold); outline-offset: 3px;
+	}
+	strong { font-weight: 600; }
+	/* House rule: italic means Claire is speaking. */
+	em { font-family: var(--display); font-style: italic; font-weight: 300; font-size: 1.12em; }
 }
 
-body {
-  background-color: var(--color-bg);
-  color: var(--color-text);
-  font-family: var(--font-sans);
+/* ─── Layout primitives ───────────────────────────────────────── */
+.wrap { max-width: 1040px; margin-inline: auto; padding-inline: 28px; }
+.wrap-narrow { max-width: 720px; margin-inline: auto; padding-inline: 28px; }
+.eyebrow { font-family: var(--body); font-size: 11.5px; font-weight: 600; letter-spacing: .18em; text-transform: uppercase; color: var(--gold); }
+.sec { display: flex; flex-direction: column; gap: 22px; padding: 74px 0; border-top: 1px solid var(--hair); }
+.sec-first { border-top: 0; }
+.h-display { font-family: var(--display); font-weight: 300; font-size: clamp(40px, 7vw, 72px); line-height: 1; letter-spacing: -.012em; }
+.h-sec { font-family: var(--display); font-size: clamp(30px, 4.4vw, 44px); line-height: 1.08; letter-spacing: -.005em; }
+.h-card { font-family: var(--display); font-size: 25px; line-height: 1.15; }
+.lede { max-width: var(--measure); color: var(--muted); font-size: 17px; }
+.muted { color: var(--muted); }
+.meta { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); font-variant-numeric: tabular-nums; }
+.rule-gold { height: 1px; background: linear-gradient(to right, var(--gold), rgba(206,184,136,0)); max-width: 340px; border: 0; margin: 0; }
+.prose { max-width: var(--measure); display: flex; flex-direction: column; gap: 1.05em; color: #DCD0C4; }
+.prose h3 { font-family: var(--display); font-size: 26px; color: var(--cream); margin-top: .4em; }
+.prose blockquote { margin: 0; padding-left: 22px; border-left: 2px solid var(--blush); font-family: var(--display); font-style: italic; font-weight: 300; font-size: 23px; line-height: 1.5; color: var(--cream); }
+.prose ul, .prose ol { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; }
+
+/* ─── Pull quote — Claire's words ─────────────────────────────── */
+.quote { display: flex; flex-direction: column; gap: 12px; max-width: 56ch; padding-left: 22px; border-left: 2px solid var(--blush); }
+.quote .q { font-family: var(--display); font-weight: 300; font-style: italic; font-size: clamp(21px, 2.6vw, 27px); line-height: 1.5; color: var(--cream); }
+.quote .by { font-size: 11.5px; letter-spacing: .16em; text-transform: uppercase; color: var(--blush); }
+.quote-haley .q { font-style: normal; font-weight: 400; }
+.quote-haley { border-left-color: var(--gold); }
+.quote-haley .by { color: var(--gold); }
+
+/* ─── Photo treatment — black around the work, no frames ─────── */
+.frame { background: var(--surface); border-radius: 2px; overflow: hidden; }
+.frame img { display: block; width: 100%; height: auto; }
+.cap { font-size: 12.5px; color: var(--muted); line-height: 1.5; }
+.cap b { color: var(--gold); font-weight: 600; display: block; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; margin-bottom: 3px; }
+.grid-photos { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 24px; }
+
+/* ─── Doors & cards ───────────────────────────────────────────── */
+.doors { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 2px; }
+.door { padding: 28px 24px; background: var(--surface); display: flex; flex-direction: column; gap: 8px; min-height: 170px; color: var(--cream); text-decoration: none; transition: background .25s; }
+.door:hover { background: var(--surface-2); }
+.door .n { font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--gold); }
+.door .t { font-family: var(--display); font-size: 26px; line-height: 1.15; }
+.door .d { font-size: 14px; color: var(--muted); line-height: 1.5; }
+.door .go { margin-top: auto; font-size: 13px; color: var(--gold); }
+
+/* ─── Video ───────────────────────────────────────────────────── */
+.video-frame { position: relative; border-radius: 2px; overflow: hidden; background: #000; aspect-ratio: 16 / 9; }
+.video-frame img, .video-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border: 0; }
+.video-frame button { position: absolute; inset: 0; width: 100%; height: 100%; background: none; border: 0; padding: 0; cursor: pointer; color: inherit; font: inherit; text-align: left; }
+.video-frame .shade { position: absolute; inset: 0; background: linear-gradient(to top, rgba(14,10,9,.82), rgba(14,10,9,0) 50%); }
+.video-meta { position: absolute; left: 22px; right: 22px; bottom: 18px; display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 16px; }
+.video-meta .t { font-family: var(--display); font-size: clamp(22px, 3vw, 30px); color: var(--cream); display: inline-flex; align-items: center; gap: 12px; }
+.video-meta .t::before { content: ""; width: 0; height: 0; flex: none; border-left: 14px solid var(--blush); border-top: 9px solid transparent; border-bottom: 9px solid transparent; }
+.video-meta .t.pending::before { display: none; }
+.video-meta .d { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--gold); font-variant-numeric: tabular-nums; }
+
+/* ─── Programme list ──────────────────────────────────────────── */
+.programme { display: flex; flex-direction: column; border-top: 1px solid var(--hair); }
+.prog-row { display: grid; grid-template-columns: 36px 120px 1fr auto; gap: 18px; align-items: center; padding: 16px 0; border-bottom: 1px solid var(--hair); color: var(--cream); text-decoration: none; }
+.prog-row:hover .prog-title { color: var(--gold); }
+.prog-no { font-family: var(--display); font-size: 22px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.prog-thumb { aspect-ratio: 16 / 9; background: var(--surface); overflow: hidden; border-radius: 2px; }
+.prog-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.prog-title { font-family: var(--display); font-size: 24px; line-height: 1.2; transition: color .2s; }
+.prog-sub { font-size: 13.5px; color: var(--muted); }
+.prog-lang { font-size: 11.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--gold); white-space: nowrap; }
+
+/* ─── Timeline (stages) ───────────────────────────────────────── */
+.timeline { display: flex; flex-direction: column; border-left: 1px solid var(--hair); margin-left: 6px; }
+.tl { position: relative; padding: 0 0 30px 28px; display: flex; flex-direction: column; gap: 4px; }
+.tl::before { content: ""; position: absolute; left: -5px; top: 9px; width: 9px; height: 9px; border-radius: 50%; background: var(--garnet); box-shadow: 0 0 0 3px var(--ground); }
+.tl .y { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--gold); font-variant-numeric: tabular-nums; }
+.tl .t { font-family: var(--display); font-size: 25px; line-height: 1.2; }
+.tl .p { font-size: 14.5px; color: var(--muted); }
+
+/* ─── Journals — the one light surface ────────────────────────── */
+.paper { background: var(--paper); color: var(--ink); }
+.paper .eyebrow { color: var(--garnet-deep); }
+.paper .meta { color: var(--ink-soft); }
+.paper a { color: var(--garnet-deep); }
+.journal-body { font-family: var(--display); font-style: italic; font-weight: 300; font-size: clamp(21px, 2.4vw, 25px); line-height: 1.6; color: var(--ink); white-space: pre-line; max-width: 44ch; }
+.journal-card { display: flex; flex-direction: column; gap: 10px; padding: 26px 24px; background: #FBF6EE; border: 1px solid rgba(42,33,29,.1); border-radius: 3px; color: var(--ink); text-decoration: none; transition: border-color .2s; }
+.journal-card:hover { border-color: var(--garnet-deep); }
+.journal-card .x { font-family: var(--display); font-style: italic; font-weight: 300; font-size: 21px; line-height: 1.45; }
+.scan { background: #fff; box-shadow: 0 1px 2px rgba(42,33,29,.12), 0 12px 32px rgba(42,33,29,.14); border-radius: 2px; overflow: hidden; }
+.scan img { display: block; width: 100%; height: auto; }
+
+/* ─── Book ────────────────────────────────────────────────────── */
+.stage3d { padding: 64px 0 54px; display: flex; flex-direction: column; align-items: center; background: radial-gradient(60% 70% at 50% 78%, rgba(142,51,70,.16), transparent 70%), linear-gradient(to bottom, var(--surface), var(--ground)); border-radius: 3px; }
+.book-scene { perspective: 1700px; perspective-origin: 50% 45%; }
+.book3d { position: relative; width: min(280px, 62vw); transform-style: preserve-3d; transform: rotateY(-25deg) rotateX(3deg); transition: transform .85s cubic-bezier(.2,.7,.2,1); }
+.book-scene:hover .book3d { transform: rotateY(-9deg) rotateX(1deg); }
+.book3d img { display: block; width: 100%; height: auto; border-radius: 1px 3px 3px 1px; box-shadow: -1px 0 0 rgba(0,0,0,.6), 26px 30px 52px rgba(0,0,0,.66), 62px 66px 100px rgba(0,0,0,.42); }
+.book3d::before { content: ""; position: absolute; top: 0; bottom: 0; left: 0; width: 30px; transform: translateX(-30px) rotateY(-90deg); transform-origin: right center; background: linear-gradient(to right, #0A0605, #2A1512 55%, var(--garnet-deep)); border-radius: 2px 0 0 2px; }
+.book3d::after { content: ""; position: absolute; top: 0; right: 0; bottom: 0; width: 9px; transform: translateX(9px) rotateY(90deg); transform-origin: left center; background: repeating-linear-gradient(to right, #D9CDBE, #B9AB9C 1px, #D9CDBE 2px); opacity: .5; }
+.floor { margin-top: 26px; width: 320px; max-width: 80%; height: 52px; background: radial-gradient(50% 100% at 50% 0%, rgba(0,0,0,.6), transparent 72%); filter: blur(5px); }
+
+/* ─── Buttons & forms ─────────────────────────────────────────── */
+.btn { display: inline-flex; align-items: center; gap: 10px; padding: 13px 22px; border-radius: 2px; background: var(--garnet); color: var(--cream); font-weight: 600; font-size: 15px; text-decoration: none; border: 0; cursor: pointer; transition: background .2s; }
+.btn:hover { background: var(--garnet-deep); }
+.btn-ghost { background: transparent; box-shadow: inset 0 0 0 1px var(--hair); color: var(--cream); }
+.btn-ghost:hover { background: var(--surface); }
+.field { display: flex; flex-direction: column; gap: 7px; }
+.field label { font-size: 13px; font-weight: 600; letter-spacing: .04em; color: var(--cream); }
+.field .hint { font-size: 13px; color: var(--muted); }
+.field input, .field textarea, .field select { background: var(--surface); color: var(--cream); border: 1px solid var(--hair); border-radius: 2px; padding: 12px 14px; font: inherit; font-size: 16px; }
+.field textarea { min-height: 200px; resize: vertical; }
+.check { display: flex; gap: 10px; align-items: flex-start; font-size: 14.5px; color: var(--muted); }
+.check input { margin-top: 5px; accent-color: var(--garnet); }
+
+/* ─── Help ────────────────────────────────────────────────────── */
+.res { display: flex; flex-direction: column; gap: 8px; padding: 24px; background: var(--surface); border-radius: 2px; border-left: 2px solid var(--garnet); }
+.res .t { font-family: var(--display); font-size: 25px; }
+.res .ways { display: flex; flex-wrap: wrap; gap: 8px 20px; font-size: 15px; }
+.res .ways b { color: var(--gold); font-weight: 600; }
+
+/* ─── Chrome ──────────────────────────────────────────────────── */
+.care { position: sticky; top: 0; z-index: 50; background: var(--garnet-deep); color: var(--cream); font-size: 13.5px; min-height: var(--care-h); display: flex; align-items: center; }
+.care .wrap { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 4px 18px; width: 100%; padding-top: 8px; padding-bottom: 8px; }
+.care a { color: var(--gold); font-weight: 600; text-decoration: none; }
+.care .care-sub { color: var(--cream); opacity: .82; }
+.care .lifeline { font-family: var(--display); font-size: 19px; }
+.care .lifeline b { color: var(--gold); font-weight: 400; }
+.site-head { border-bottom: 1px solid var(--hair); }
+.site-head .wrap { display: flex; align-items: center; justify-content: space-between; gap: 18px; min-height: 68px; }
+.brand { font-family: var(--display); font-size: 22px; color: var(--cream); text-decoration: none; letter-spacing: .01em; white-space: nowrap; }
+.brand i { font-style: italic; font-weight: 300; }
+.nav { display: flex; gap: 26px; align-items: center; }
+.nav a { color: var(--muted); text-decoration: none; font-size: 14px; letter-spacing: .04em; }
+.nav a:hover, .nav a[aria-current="page"] { color: var(--cream); }
+.nav-toggle { display: none; background: none; border: 1px solid var(--hair); color: var(--cream); padding: 8px 12px; border-radius: 2px; font: inherit; font-size: 14px; cursor: pointer; }
+.site-foot { border-top: 1px solid var(--hair); padding: 48px 0 60px; margin-top: 40px; font-size: 13.5px; color: var(--muted); }
+.site-foot .cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 28px; }
+.site-foot a { color: var(--cream); text-decoration: none; }
+.site-foot a:hover { color: var(--gold); }
+.site-foot ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.site-foot .ded { font-family: var(--display); font-style: italic; font-weight: 300; font-size: 19px; color: var(--blush); }
+.copyright { margin-top: 36px; padding-top: 20px; border-top: 1px solid var(--hair); font-size: 12.5px; }
+.copyright a { color: var(--gold); }
+.skip { position: absolute; left: -9999px; top: 0; z-index: 100; background: var(--gold); color: var(--ground); padding: 10px 16px; }
+.skip:focus { left: 12px; top: 12px; }
+
+@media (max-width: 820px) {
+	.nav-toggle { display: inline-block; }
+	.nav { display: none; position: absolute; left: 0; right: 0; top: 100%; flex-direction: column; align-items: flex-start; gap: 0; background: var(--ground); border-bottom: 1px solid var(--hair); padding: 8px 28px 18px; z-index: 40; }
+	.nav.open { display: flex; }
+	.nav a { padding: 10px 0; font-size: 17px; }
+	.site-head { position: relative; }
+	.prog-row { grid-template-columns: 28px 1fr; }
+	.prog-thumb, .prog-lang { display: none; }
+	.sec { padding: 56px 0; }
 }
+@media (max-width: 560px) {
+	.wrap, .wrap-narrow { padding-inline: 18px; }
+	.care .care-sub { display: none; }
+	.care .lifeline { font-size: 17px; }
+}
+@media (prefers-reduced-motion: reduce) {
+	.book3d, .door, .journal-card { transition: none; }
+}
+.site-foot .foot-lead { display: flex; flex-direction: column; gap: 12px; }

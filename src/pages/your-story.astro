@@ -1,0 +1,12 @@
+---
+import StoryForm from '../components/StoryForm.astro';
+import Layout from '../layouts/Layout.astro';
+---
+<Layout title="Share your story — The Endless What Ifs" description="If Claire’s story has touched your life, share yours with Haley Goodwin.">
+	<section class="wrap-narrow sec sec-first">
+		<p class="eyebrow">Share your story</p>
+		<h1 class="h-display">Tell us yours</h1>
+		<p class="lede">Every story shared here is read by Haley, privately. Nothing you write is published on this site. If you are in crisis right now, please <a href="tel:988">call or text 988</a> first — this form is not monitored around the clock.</p>
+		<StoryForm slug="endless-your-story" title="Reader story — The Endless What Ifs" fields="story" />
+	</section>
+</Layout>

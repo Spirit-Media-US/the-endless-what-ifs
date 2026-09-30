@@ -1,0 +1,17 @@
+---
+// Utility pages (privacy, thank-you, …) — one template, content from Sanity.
+import Layout from '../layouts/Layout.astro';
+import { q, rich, sanityClient } from '../lib/sanity';
+export async function getStaticPaths() {
+	const pages = await sanityClient.fetch(q.pages);
+	return pages.map((p: any) => ({ params: { slug: p.slug }, props: { p } }));
+}
+const { p } = Astro.props as any;
+---
+<Layout title={p.seo?.title ?? `${p.title} — The Endless What Ifs`} description={p.seo?.description ?? p.intro} noindex={p.slug === 'thank-you'}>
+	<section class="wrap-narrow sec sec-first">
+		<h1 class="h-display">{p.title}</h1>
+		{p.intro && <p class="lede">{p.intro}</p>}
+		{p.body && <div class="prose" set:html={rich(p.body)} />}
+	</section>
+</Layout>
