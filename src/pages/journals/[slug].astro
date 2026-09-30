@@ -10,6 +10,7 @@ const { e, prev, next } = Astro.props as any;
 const date = e.dateNote ?? fmtDate(e.date);
 ---
 <Layout title={`${e.title ? `${e.title} — ` : ''}${date} — Claire’s journals`} description={e.body.slice(0, 150)} ogImage={e.pages?.[0]}>
+	<Fragment slot="head"><link rel="preload" as="font" type="font/woff2" href="https://assets.spiritmediapublishing.com/fonts/cormorant/cormorant-500-italic.woff2" crossorigin /></Fragment>
 	<div class="paper paper-page">
 		<section class="wrap sec sec-first">
 			<p class="eyebrow"><a class="plain" href="/journals/">Her journals</a>{e.series && ` · ${e.series}`}</p>
@@ -42,7 +43,7 @@ const date = e.dateNote ?? fmtDate(e.date);
 	.ink { color: var(--ink); }
 	.cnote p { max-width: var(--measure); padding: 16px 20px; margin-bottom: 36px; background: #FBF6EE; border-left: 3px solid var(--garnet); color: var(--ink-soft); font-size: 15.5px; }
 	.cnote strong { color: var(--ink); }
-	.jtitle { font-style: italic; font-weight: 300; }
+	.jtitle { font-style: italic; font-weight: 500; }
 	.entry { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 460px); gap: 56px; align-items: start; }
 	.scans { display: flex; flex-direction: column; gap: 18px; }
 	.ink-sec { border-top-color: rgba(42,33,29,.14); margin-top: 40px; }

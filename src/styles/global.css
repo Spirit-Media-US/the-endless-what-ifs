@@ -2,6 +2,7 @@
 
 /* ─── Fonts — self-hosted on R2 (Trait 4) ─────────────────────── */
 @font-face{font-family:'Cormorant';font-style:italic;font-weight:300;font-display:optional;src:url('https://assets.spiritmediapublishing.com/fonts/cormorant/cormorant-300-italic.woff2') format('woff2');}
+@font-face{font-family:'Cormorant';font-style:italic;font-weight:500;font-display:optional;src:url('https://assets.spiritmediapublishing.com/fonts/cormorant/cormorant-500-italic.woff2') format('woff2');}
 @font-face{font-family:'Cormorant';font-style:normal;font-weight:300;font-display:optional;src:url('https://assets.spiritmediapublishing.com/fonts/cormorant/cormorant-300.woff2') format('woff2');}
 @font-face{font-family:'Cormorant';font-style:normal;font-weight:400;font-display:optional;src:url('https://assets.spiritmediapublishing.com/fonts/cormorant/cormorant-400.woff2') format('woff2');}
 @font-face{font-family:'Source Sans 3';font-style:normal;font-weight:400;font-display:optional;src:url('https://assets.spiritmediapublishing.com/fonts/source-sans-3/source-sans-3-400.woff2') format('woff2');}
@@ -125,12 +126,13 @@
 /* ─── Journals — the one light surface ────────────────────────── */
 .paper { background: var(--paper); color: var(--ink); }
 .paper .eyebrow { color: var(--garnet-deep); }
-.paper .meta { color: var(--ink-soft); }
+.paper .meta { color: var(--ink-soft); font-size: 13px; font-weight: 600; }
+.paper em { font-weight: 500; color: var(--ink); }
 .paper a { color: var(--garnet-deep); }
-.journal-body { font-family: var(--display); font-style: italic; font-weight: 300; font-size: clamp(21px, 2.4vw, 25px); line-height: 1.6; color: var(--ink); white-space: pre-line; max-width: 44ch; }
-.journal-card { display: flex; flex-direction: column; gap: 10px; padding: 26px 24px; background: #FBF6EE; border: 1px solid rgba(42,33,29,.1); border-radius: 3px; color: var(--ink); text-decoration: none; transition: border-color .2s; }
+.journal-body { font-family: var(--display); font-style: italic; font-weight: 500; font-size: clamp(21px, 2.4vw, 24px); line-height: 1.6; color: var(--ink); white-space: pre-line; max-width: 44ch; }
+.journal-card { display: flex; flex-direction: column; gap: 10px; padding: 26px 24px; background: #FFFDF9; border: 1px solid rgba(42,33,29,.18); box-shadow: 0 1px 2px rgba(42,33,29,.06); border-radius: 3px; color: var(--ink); text-decoration: none; transition: border-color .2s; }
 .journal-card:hover { border-color: var(--garnet-deep); }
-.journal-card .x { font-family: var(--display); font-style: italic; font-weight: 300; font-size: 21px; line-height: 1.45; }
+.journal-card .x { font-family: var(--display); font-style: italic; font-weight: 500; font-size: 23px; line-height: 1.35; color: var(--ink); }
 .scan { background: #fff; box-shadow: 0 1px 2px rgba(42,33,29,.12), 0 12px 32px rgba(42,33,29,.14); border-radius: 2px; overflow: hidden; }
 .scan img { display: block; width: 100%; height: auto; }
 

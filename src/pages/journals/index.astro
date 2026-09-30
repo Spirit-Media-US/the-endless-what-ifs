@@ -12,6 +12,7 @@ for (const e of entries) {
 }
 ---
 <Layout title="Her journals — Claire Rose Goodwin" description="Pages from the journals Claire Goodwin kept in 2024 — her mornings, her nights, her goals and her values, in her own words.">
+	<Fragment slot="head"><link rel="preload" as="font" type="font/woff2" href="https://assets.spiritmediapublishing.com/fonts/cormorant/cormorant-500-italic.woff2" crossorigin /></Fragment>
 	<div class="paper paper-page">
 		<section class="wrap sec sec-first">
 			<p class="eyebrow">Her voice</p>
@@ -37,9 +38,9 @@ for (const e of entries) {
 </Layout>
 <style>
 	.paper-page { padding-bottom: 60px; margin-bottom: -40px; }
-	.lede-ink { max-width: var(--measure); color: var(--ink-soft); font-size: 17px; }
+	.lede-ink { max-width: var(--measure); color: var(--ink); font-size: 18px; }
 	.ink-sec { border-top-color: rgba(42,33,29,.14); }
-	.journal-card .more { font-size: 13px; color: var(--garnet-deep); margin-top: auto; }
-	.journal-card .cn { font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--garnet); }
+	.journal-card .more { font-size: 14px; font-weight: 600; color: var(--garnet-deep); margin-top: auto; }
+	.journal-card .cn { font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--garnet-deep); }
 	.jgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; }
 </style>
