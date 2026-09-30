@@ -6,10 +6,13 @@
 import Picture from '../components/Picture.astro';
 import Video from '../components/Video.astro';
 import Layout from '../layouts/Layout.astro';
-import { fmtDate, img, q, rich, sanityClient } from '../lib/sanity';
+import { fmtDate, img, q, rich, sanityClient, urlFor } from '../lib/sanity';
 
 const home = await sanityClient.fetch(q.home);
-const hero = img(home?.heroImage, [600, 900, 1400]);
+const hero = img(home?.heroImage, [1400]);
+// Canonical 100 Club hero: explicit ≤800w mobile WebP + desktop WebP (Trait 1).
+const heroMobile = home?.heroImage ? urlFor(home.heroImage).width(640).format('webp').quality(80).url() : '';
+const heroDesktop = home?.heroImage ? urlFor(home.heroImage).width(1400).format('webp').quality(80).url() : '';
 const signoff = img(home?.signoff, [540, 1080]);
 const fp = home?.featuredPerformance;
 const person = {
@@ -24,14 +27,14 @@ const person = {
 ---
 <Layout title={home?.seo?.title ?? 'Claire Rose Goodwin — The Endless What Ifs'} description={home?.seo?.description} ogImage={home?.heroImage} jsonLd={person}>
 	<Fragment slot="head">
-		{hero && <link rel="preload" as="image" imagesrcset={hero.srcset} imagesizes="(max-width: 800px) 100vw, 1400px" fetchpriority="high" />}
+		{hero && <link rel="preload" as="image" href={heroDesktop} imagesrcset={`${heroMobile} 640w, ${heroDesktop} 1400w`} imagesizes="(max-width: 800px) 100vw, 1400px" fetchpriority="high" />}
 	</Fragment>
 
 	<!-- HERO — no animation hooks (Trait 7) -->
 	<section class="hero">
 		{hero && (
 			<div class="hero-img">
-				<img src={hero.src} srcset={hero.srcset} sizes="(max-width: 800px) 100vw, 1400px" width={hero.width} height={hero.height} alt={hero.alt} fetchpriority="high" loading="eager" decoding="async" />
+				<img src={heroDesktop} srcset={`${heroMobile} 640w, ${heroDesktop} 1400w`} sizes="(max-width: 800px) 100vw, 1400px" width={hero.width} height={hero.height} alt={hero.alt} fetchpriority="high" loading="eager" decoding="async" />
 			</div>
 		)}
 		<div class="wrap hero-inner">
