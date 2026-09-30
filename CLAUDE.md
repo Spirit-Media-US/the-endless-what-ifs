@@ -31,6 +31,11 @@ The whole site is about Claire. It (1) shares Claire's story, (2) showcases Hale
 | `/your-story/`, `/haley/` | Forms | POST `/api/submit` (functions/api/submit.js, copied from smp-forms) → Mailgun + GHL tag |
 | `/privacy/`, `/thank-you/` | Utility | `page` |
 
+## House rules — Help page (Kevin 2026-09-30)
+- Lead with Christian / biblically centered care (The Kohler Group first). Secular resources stay, below.
+- The LGBTQ+ line (Trevor) stays but sits last under a neutral "More support" heading — nothing on the site may label Claire.
+- The page must carry colour (garnet hero, paper band, toned cards) — not a black page.
+
 ## House rules — design
 - Palette/typography tokens live in `src/styles/global.css` and were MEASURED from Claire's photographs. Don't add colors.
 - **Italic means Claire is speaking.** Use italic only for her own words (journals, her quotes). Haley's words are upright with a gold rule.
@@ -71,12 +76,12 @@ Initial content load: `/home/deploy/projects/endless-what-ifs-site/load/load_con
 - Real content loaded: story (from memorial program), 7 recital performances with poster frames, 8 stages, 8 photos, 6 sample journal entries with scans, book, Haley, 9 resources
 
 ### Pending
-- YouTube uploads for the 7 recital videos (whose channel?) → set `youtubeId`
-- Sung texts + translations (only Zdes khorosho translation is loaded; source from public-domain texts)
+- YouTube: HALEY'S OWN channel (Kevin 2026-09-30), set up once the site URL/email exist → set `youtubeId`
+- Sung texts: Morgen, Schlechtes Wetter, Zdes khorosho done (PD words, our translations). Violon (Vilmorin) and Sakura yokochō (Katō Shūson) words are still in copyright — need permission or leave blank; Villanelle + Come Down Angels need composer/words identified
 - Composer for Villanelle and Come Down Angels; confirm programme order and pianist credit
 - Duet (IMG_1629) + masterclass (IMG_7482): venue/date from Haley; not loaded
 - Tributes: blur student names on the sticky-note photos, then add a "How she's remembered" section
 - Haley to pick the public journal entries (May–Aug 2024 only)
 - Book: ISBNs, formats, retailer links, description, excerpt (not Chapter 1)
-- Forms: set MAILGUN_* / NOTIFY_TO / GHL_* env on the CF Pages project, test a real submission
+- Forms: Haley gets her OWN GHL sub-account under SMP (Kevin 2026-09-30, before final delivery) → set GHL_* for that location + MAILGUN_* / NOTIFY_TO on CF Pages, test a real submission
 - Sanity → CF deploy hook webhook; CORS for the live domain; domain + CF zone settings
