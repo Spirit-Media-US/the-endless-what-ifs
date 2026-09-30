@@ -41,7 +41,7 @@ The whole site is about Claire. It (1) shares Claire's story, (2) showcases Hale
 - **Italic means Claire is speaking.** Use italic only for her own words (journals, her quotes). Haley's words are upright with a gold rule.
 - Journals are the one light (paper) surface. Everything else is the warm near-black ground.
 - 988 band is sticky on every page (`CareBand.astro`). Never remove it; it is a HARD row on the score sheet.
-- Safe messaging: no method detail anywhere. Journal entries after August 2024 stay OFF the site (Nov 22 page describes self-harm).
+- Journals: Haley wants ALL entries public (Kevin 2026-09-30). 48 entries loaded in notebook order; entries about suicide carry a content note + 988. THREE are held (visible=false, scans NOT uploaded): the two Sept 2024 "in case" letters (to family, to Izaac) and the undated self-harm page that names a method — waiting on Kevin/Haley. Safe messaging: no method detail anywhere.
 - Video: YouTube only, via the click-to-load facade in `Video.astro`. No `<video>` tags.
 
 ## Sanity Content Audit
@@ -77,11 +77,10 @@ Initial content load: `/home/deploy/projects/endless-what-ifs-site/load/load_con
 
 ### Pending
 - YouTube: HALEY'S OWN channel (Kevin 2026-09-30), set up once the site URL/email exist → set `youtubeId`
-- Sung texts: Morgen, Schlechtes Wetter, Zdes khorosho done (PD words, our translations). Violon (Vilmorin) and Sakura yokochō (Katō Shūson) words are still in copyright — need permission or leave blank; Villanelle + Come Down Angels need composer/words identified
-- Composer for Villanelle and Come Down Angels; confirm programme order and pianist credit
+- Sung texts: all 7 done with citation + source link (Kevin 2026-09-30: copyrighted words quoted in remembrance with citation; get permission if ever contested). Villanelle = Eva Dell'Acqua / Frédéric van der Elst; Come Down Angels = Undine Smith Moore arr. of the traditional spiritual; Sakura yokochō poet = Shūichi Katō
+- Confirm programme order and pianist credit with Haley
 - Duet (IMG_1629) + masterclass (IMG_7482): venue/date from Haley; not loaded
 - Tributes: blur student names on the sticky-note photos, then add a "How she's remembered" section
-- Haley to pick the public journal entries (May–Aug 2024 only)
 - Book: ISBNs, formats, retailer links, description, excerpt (not Chapter 1)
 - Forms: Haley gets her OWN GHL sub-account under SMP (Kevin 2026-09-30, before final delivery) → set GHL_* for that location + MAILGUN_* / NOTIFY_TO on CF Pages, test a real submission
 - Sanity → CF deploy hook webhook; CORS for the live domain; domain + CF zone settings
