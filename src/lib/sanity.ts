@@ -3,7 +3,7 @@ import { createImageUrlBuilder } from '@sanity/image-url';
 
 // TODO: Replace with the new site's Sanity project ID
 export const sanityClient = createClient({
-  projectId: 'REPLACE_PROJECT_ID',
+  projectId: 'yu45ypx3',
   dataset: 'production',
   useCdn: true,
   apiVersion: '2024-01-01',
