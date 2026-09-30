@@ -4,7 +4,7 @@ import Layout from '../layouts/Layout.astro';
 import { q, rich, sanityClient } from '../lib/sanity';
 export async function getStaticPaths() {
 	const pages = await sanityClient.fetch(q.pages);
-	return pages.map((p: any) => ({ params: { slug: p.slug }, props: { p } }));
+	return pages.filter((p: any) => p.slug !== "remembered").map((p: any) => ({ params: { slug: p.slug }, props: { p } }));
 }
 const { p } = Astro.props as any;
 ---

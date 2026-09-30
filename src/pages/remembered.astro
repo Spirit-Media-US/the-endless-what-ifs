@@ -1,0 +1,44 @@
+---
+import Picture from '../components/Picture.astro';
+import Layout from '../layouts/Layout.astro';
+import { q, rich, sanityClient } from '../lib/sanity';
+const [pages, tributes] = await Promise.all([sanityClient.fetch(q.pages), sanityClient.fetch(q.tributes)]);
+const p = pages.find((x: any) => x.slug === 'remembered');
+---
+<Layout title={p?.seo?.title ?? 'How she’s remembered — Claire Rose Goodwin'} description={p?.seo?.description ?? p?.intro} ogImage={tributes[0]?.image}>
+	<section class="wrap sec sec-first">
+		<p class="eyebrow">How she’s remembered</p>
+		<h1 class="h-display">{p?.title ?? 'How she’s remembered'}</h1>
+		{p?.intro && <p class="lede">{p.intro}</p>}
+	</section>
+	{tributes.length > 0 && (
+		<section class="wrap sec">
+			<p class="eyebrow">From her classmates at Florida State · January 2025</p>
+			<div class="notes">
+				{tributes.map((t: any) => t.image && (
+					<figure class="note">
+						<a href={t.image.asset?.url} target="_blank" rel="noopener" aria-label="Open this photo full size">
+							<div class="frame"><Picture image={t.image} widths={[500, 900, 1400]} sizes="(max-width: 820px) 100vw, 500px" /></div>
+						</a>
+						{t.text && <figcaption class="cap">{t.text}</figcaption>}
+					</figure>
+				))}
+			</div>
+			<p class="cap">Tap any photo to see it full size.</p>
+		</section>
+	)}
+	{p?.body && (
+		<section class="wrap sec">
+			<p class="eyebrow">January 4, 2025 · Clayton, North Carolina</p>
+			<h2 class="h-sec">A service to honor and remember her life</h2>
+			<div class="prose" set:html={rich(p.body)} />
+			<p><a href="/work/zdes-khorasho/">Zdes khorosho</a> · <a href="/work/come-down-angels/">Come Down Angels</a></p>
+		</section>
+	)}
+</Layout>
+<style>
+	.notes { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+	.note { margin: 0; display: flex; flex-direction: column; gap: 8px; }
+	.note a { display: block; }
+	.note a:hover .frame { outline: 1px solid var(--gold); }
+</style>
