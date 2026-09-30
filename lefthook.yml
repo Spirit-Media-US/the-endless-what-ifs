@@ -1,0 +1,25 @@
+pre-push:
+  commands:
+    perf-traits:
+      run: /home/deploy/bin/perf-traits-audit.sh --hook
+      skip:
+        - merge
+        - rebase
+    update-status:
+      run: node scripts/update-status.mjs && git add PROJECT-STATUS.md
+      skip:
+        - merge
+        - rebase
+
+pre-commit:
+  commands:
+    perf-traits-doc:
+      run: /home/deploy/bin/perf-traits-audit.sh --commit-hook
+      stage_fixed: true
+      skip:
+        - merge
+        - rebase
+    biome:
+      glob: "*.{js,ts,jsx,tsx,json,css,astro}"
+      run: bunx biome check --write --no-errors-on-unmatched {staged_files}
+      stage_fixed: true

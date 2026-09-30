@@ -1,0 +1,43 @@
+dist/
+.astro/
+node_modules/
+.env
+.env.*
+!.env.example
+*.log
+
+# Sanity studio build artifacts
+.sanity/runtime/
+
+# Media files — never commit to git
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.webp
+*.svg
+*.mp4
+*.mp3
+*.mov
+*.pdf
+*.bak
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+
+.mcp.json
+
+# Playwright MCP session logs
+.playwright-mcp/
+
+# Per-machine Claude Code settings
+.claude/settings.local.json
+public/studio/
+
+# 100 Club registry — generated at build time by scripts/sync-100club-registry.mjs (from R2); not source
+src/data/100club-sites.json

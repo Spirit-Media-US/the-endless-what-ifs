@@ -1,0 +1,16 @@
+/*
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+  X-Frame-Options: SAMEORIGIN
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(), microphone=(), camera=(), payment=()
+  X-Robots-Tag: index, follow
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://cdn.sanity.io https://assets.spiritmediapublishing.com https://www.google-analytics.com https://www.googletagmanager.com; font-src 'self' https://assets.spiritmediapublishing.com; connect-src 'self' https://REPLACE_SANITY_PROJECT_ID.api.sanity.io https://www.google-analytics.com https://www.googletagmanager.com https://cloudflareinsights.com; frame-src https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com; media-src 'self' https://assets.spiritmediapublishing.com; object-src 'none'; base-uri 'self'; form-action 'self'
+
+# Trait 2 / Early Hints — Cloudflare Pages promotes Link: headers to HTTP/2 103 responses
+# when CF zone setting `early_hints=on` (cf-zone-settings.md). Wire one Link: line per
+# above-fold preload (hero image, primary fonts). Examples below — uncomment and edit.
+#
+# /
+#   Link: <https://assets.spiritmediapublishing.com/fonts/FAMILY/FAMILY-400.woff2>; rel=preload; as=font; type=font/woff2; crossorigin
+#   Link: <https://cdn.sanity.io/images/PROJECT_ID/production/HERO_HASH.webp?w=1200&fm=webp&q=80>; rel=preload; as=image

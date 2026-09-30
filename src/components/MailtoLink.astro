@@ -1,0 +1,30 @@
+---
+// MailtoLink — standard SMP component. Bare mailto: links are banned across
+// SMP sites; use this on every page that exposes an email address.
+//
+// Splits the address into data-mu / data-md attributes that JS reassembles on
+// the client. Defeats most static scraper bots without breaking accessibility.
+interface Props {
+	email: string;
+	class?: string;
+}
+
+const { email, class: className } = Astro.props;
+const [user, domain] = email.split("@");
+---
+
+<a href="#" data-mu={user} data-md={domain} class={className}>
+	<slot />
+</a>
+
+<script>
+	function wireMailto() {
+		document.querySelectorAll<HTMLAnchorElement>('a[data-mu][data-md]').forEach((el) => {
+			const u = el.dataset.mu;
+			const d = el.dataset.md;
+			if (u && d) el.href = `mailto:${u}@${d}`;
+		});
+	}
+	if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', wireMailto);
+	else wireMailto();
+</script>

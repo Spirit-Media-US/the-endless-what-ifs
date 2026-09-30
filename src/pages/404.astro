@@ -1,0 +1,12 @@
+---
+import Layout from '../layouts/Layout.astro';
+import '../styles/global.css';
+---
+<Layout title="Page Not Found">
+  <Fragment slot="head"><meta name="robots" content="noindex, nofollow" /></Fragment>
+  <main class="flex min-h-screen flex-col items-center justify-center px-6 text-center">
+    <h1 class="text-4xl font-bold mb-4">404</h1>
+    <p class="text-lg mb-8">Page not found.</p>
+    <a href="/" class="underline">Go home</a>
+  </main>
+</Layout>

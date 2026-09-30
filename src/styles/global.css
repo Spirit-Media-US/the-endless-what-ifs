@@ -1,0 +1,44 @@
+@import "tailwindcss";
+
+/* ─── Design Tokens ───────────────────────────────────────────
+   Replace these with site-specific values.
+   See existing sites for examples:
+   - artsbyjustin: warm/gallery palette
+   - spirit-media-publishing: brand blues
+   - FHB: parchment/ink palette
+──────────────────────────────────────────────────────────────── */
+:root {
+  --font-sans: system-ui, sans-serif;
+  --font-serif: Georgia, serif;
+  --color-bg: #ffffff;
+  --color-text: #1a1a1a;
+  --color-border: #e5e5e5;
+  --color-accent: #2563eb;
+}
+
+/* ─── 100 Club cascade rule ────────────────────────────────────
+   When you add hand-rolled critical CSS via <style is:inline> in
+   Layout.astro, wrap the whole block in @layer base { ... }.
+   Unlayered CSS outranks every Tailwind @layer rule (theme/base/
+   components/utilities), which silently strips responsive utilities
+   like lg:grid-cols-N below the fold.
+
+   Two at-rules stay at the top level (CSS spec forbids them inside
+   @layer): font-face declarations and keyframes.
+
+   Diagnostic notes:
+   /home/deploy/.claude/projects/-home-deploy/memory/reference_100club_cascade_rules.md
+──────────────────────────────────────────────────────────────── */
+
+.container-site {
+  width: 100%;
+  max-width: 1200px;
+  margin-inline: auto;
+  padding-inline: 24px;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+}

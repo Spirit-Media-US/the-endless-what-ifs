@@ -1,0 +1,30 @@
+name: Deploy Sanity Studio
+
+on:
+  workflow_dispatch: # Manual trigger only — template repo has no Sanity project configured
+  # push:           # Uncomment for real sites once SANITY_DEPLOY_TOKEN secret is set
+  #   branches: [main]
+  #   paths:
+  #     - 'studio/**'
+  #     - 'sanity.config.ts'
+  #     - 'sanity.cli.js'
+
+jobs:
+  deploy-studio:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Deploy Sanity Studio
+        run: npx sanity deploy --yes
+        env:
+          SANITY_AUTH_TOKEN: ${{ secrets.SANITY_DEPLOY_TOKEN }}

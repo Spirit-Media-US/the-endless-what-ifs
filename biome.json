@@ -1,0 +1,26 @@
+{
+	"$schema": "https://biomejs.dev/schemas/2.4.9/schema.json",
+	"files": {
+		"includes": [
+			"**/*.js",
+			"**/*.ts",
+			"**/*.jsx",
+			"**/*.tsx",
+			"**/*.json",
+			"**/*.astro"
+		],
+		"experimentalScannerIgnores": ["dist/**", "node_modules/**", ".astro/**"]
+	},
+	"linter": {
+		"enabled": true,
+		"rules": {
+			"correctness": {
+				"noUnusedVariables": "warn",
+				"noUnusedImports": "warn"
+			}
+		}
+	},
+	"formatter": {
+		"enabled": true
+	}
+}

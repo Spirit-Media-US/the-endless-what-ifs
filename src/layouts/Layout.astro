@@ -1,0 +1,119 @@
+---
+// SMP Site Layout — 100 Club ready out of the box.
+//
+// This layout already implements the structural pieces of every trait:
+//   - <slot name="head"> for per-page hero preload (Trait 2)
+//   - System-font fallback by default (Trait 4 alternative — replace with
+//     R2 self-hosted woff2 preloads via /home/deploy/bin/gfonts-to-r2.mjs
+//     once a brand font is chosen)
+//   - Deferred third-party JS pattern below (Trait 5) — wire GA/GTM by
+//     filling in the GTM_ID const and uncommenting the script
+//   - public/_headers ships CSP + X-Robots-Tag + Link: Early Hints
+//   - astro.config has inlineStylesheets:'auto' (Trait 6)
+//
+// HundredClubBadge auto-renders once this site's slug is added to
+// https://assets.spiritmediapublishing.com/100club-sites.json.
+import HundredClubBadge from '../components/HundredClubBadge.astro';
+
+interface Props {
+  title: string;
+  description?: string;
+  ogImage?: string;
+}
+const {
+  title,
+  description = 'Replace this default description in src/layouts/Layout.astro',
+  ogImage,
+} = Astro.props;
+const currentYear = new Date().getFullYear();
+const siteOrigin = (Astro.site && Astro.site.toString().replace(/\/$/, '')) || '';
+const canonicalURL = siteOrigin ? new URL(Astro.url.pathname, siteOrigin).href : Astro.url.pathname;
+
+// Replace SITE_NAME with the human-readable site name once it's known.
+const SITE_NAME = 'SITE_NAME';
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <title>{title}</title>
+    <link rel="canonical" href={canonicalURL} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- Font preloads (Trait 4) — uncomment and replace once gfonts-to-r2.mjs adds the family.
+         Self-hosted from R2: assets.spiritmediapublishing.com/fonts/<slug>/<slug>-<weight>.woff2.
+         Keep to 2-3 preloads max. Every paired @font-face block in global.css must carry
+         font-display: optional. Until a webfont is wired, system fonts handle Trait 4 by alternative. -->
+    <!-- <link rel="preload" as="font" type="font/woff2" href="https://assets.spiritmediapublishing.com/fonts/FAMILY/FAMILY-400.woff2" crossorigin /> -->
+
+    <!-- Critical CSS (Trait 6) — when adding hand-rolled <style is:inline> blocks,
+         wrap their contents in @layer base { ... }. Unlayered rules outrank every
+         Tailwind @layer (theme/base/components/utilities) and silently strip
+         responsive utilities below the fold. Two at-rules stay at top level
+         (CSS spec forbids them inside @layer): font-face declarations and keyframes. -->
+
+    <!-- Open Graph / Twitter -->
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    {ogImage && <meta property="og:image" content={ogImage} />}
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <!-- JSON-LD Organization stub — fill in once brand details are confirmed.
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": SITE_NAME,
+      "url": siteOrigin,
+      "logo": ogImage,
+    })}></script>
+    -->
+
+    <!-- Per-page <head> additions (hero preload links live here — Trait 2) -->
+    <slot name="head" />
+  </head>
+  <body>
+    <header id="site-header" class="container-site flex items-center justify-between" style="padding: 16px 24px;">
+      <a href="/" style="font-weight: 700;">{SITE_NAME}</a>
+      <nav>
+        <a href="/">Home</a>
+      </nav>
+    </header>
+
+    <slot />
+
+    <footer style="padding: 32px 24px; border-top: 1px solid var(--color-border, #e5e5e5);">
+      <div class="container-site" style="display: flex; flex-direction: column; gap: 8px;">
+        <p style="margin: 0; font-size: 13px;">
+          &copy; {currentYear} {SITE_NAME}. All rights reserved. &bull; Powered by <a href="https://spiritmediapublishing.com">Spirit Media</a>
+          <HundredClubBadge />
+        </p>
+      </div>
+    </footer>
+
+    <!-- Deferred third-party JS pattern (Trait 5) — copy this block when wiring GA/GTM/Calendly/Stripe/etc.
+         Loads only after first user interaction (or 8s fallback) so it never blocks the LCP path.
+    <script is:inline>
+      const loadAnalytics = () => {
+        if (window._smpAnalyticsLoaded) return;
+        window._smpAnalyticsLoaded = true;
+        const s = document.createElement('script');
+        s.src = 'https://www.googletagmanager.com/gtag/js?id=GTM_ID';
+        s.async = true;
+        document.head.appendChild(s);
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){ window.dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'GTM_ID');
+      };
+      ['scroll', 'click', 'touchstart', 'keydown', 'mousemove'].forEach((e) =>
+        window.addEventListener(e, loadAnalytics, { once: true, passive: true })
+      );
+      setTimeout(loadAnalytics, 8000);
+    </script>
+    -->
+  </body>
+</html>

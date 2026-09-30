@@ -1,0 +1,61 @@
+---
+// SMP Site Index — 100 Club hero scaffold.
+// See /home/deploy/claude-config/rules/performance-gate.md for the trait list.
+// Keep this hero pattern intact when wiring real Sanity content:
+//   * srcset (mobile <=800w + desktop), fm=webp&q=80
+//   * Fragment slot=head preload with fetchpriority high
+//   * explicit width / height on the img tag
+//   * no animation hooks on the first hero region
+import Layout from '../layouts/Layout.astro';
+import '../styles/global.css';
+// import { sanityClient, urlFor } from '../lib/sanity.ts';
+
+// const hero = await sanityClient.fetch(`*[_type == "homepage"][0].heroImage`);
+// const heroMobile  = urlFor(hero).width(640).format('webp').quality(80).url();
+// const heroDesktop = urlFor(hero).width(1200).format('webp').quality(80).url();
+const heroMobile  = '/hero-placeholder-640.webp';
+const heroDesktop = '/hero-placeholder-1200.webp';
+---
+
+<Layout title="Site Name — Tagline">
+  <Fragment slot="head">
+    <link rel="preconnect" href="https://cdn.sanity.io" crossorigin />
+    <link
+      rel="preload"
+      as="image"
+      href={heroDesktop}
+      imagesrcset={`${heroMobile} 640w, ${heroDesktop} 1200w`}
+      imagesizes="(max-width: 640px) 640px, 1200px"
+      fetchpriority="high"
+    />
+  </Fragment>
+
+  <main>
+    <!-- HERO — first section: NO data-aos, NO reveal wrapper, NO transform-on-mount (Trait 7) -->
+    <section class="hero-section" style="padding: 48px 24px;">
+      <div class="container-site" style="display: grid; gap: 24px; max-width: 1200px; margin: 0 auto;">
+        <img
+          src={heroDesktop}
+          srcset={`${heroMobile} 640w, ${heroDesktop} 1200w`}
+          sizes="(max-width: 640px) 640px, 1200px"
+          width="1200"
+          height="675"
+          alt="Replace with descriptive alt text for the hero image"
+          fetchpriority="high"
+          loading="eager"
+          decoding="async"
+          style="width: 100%; height: auto; max-width: 1200px;"
+        />
+        <h1 style="font-size: clamp(32px, 5vw, 56px); line-height: 1.15; margin: 0;">
+          Site Name
+        </h1>
+        <p style="font-size: 18px; max-width: 65ch; margin: 0;">
+          Replace this scaffold with the real homepage hero. Keep the srcset / preload / width-height /
+          fetchpriority pattern intact — that combination is what hits 100 Club mobile out of the gate.
+        </p>
+      </div>
+    </section>
+
+    <!-- Below-fold regions may use reveal-on-scroll wrappers. Keep animation hooks OFF the hero. -->
+  </main>
+</Layout>
