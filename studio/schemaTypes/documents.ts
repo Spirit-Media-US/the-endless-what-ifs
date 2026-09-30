@@ -123,7 +123,7 @@ export const resource = defineType({
 	type: 'document',
 	fields: [
 		defineField({ name: 'name', type: 'string', validation: (r) => r.required() }),
-		defineField({ name: 'audience', type: 'string', options: { list: ['Everyone', 'Young people', 'Parents & families', 'After a loss'] }, initialValue: 'Everyone' }),
+		defineField({ name: 'audience', type: 'string', options: { list: ['Christian counseling', 'Everyone', 'Parents & families', 'Young people', 'After a loss', 'More support'] }, initialValue: 'Everyone' }),
 		defineField({ name: 'description', type: 'text', rows: 3 }),
 		defineField({ name: 'call', type: 'string' }),
 		defineField({ name: 'text', type: 'string', description: 'e.g. Text HOME to 741741' }),

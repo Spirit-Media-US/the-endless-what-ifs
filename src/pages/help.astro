@@ -2,33 +2,70 @@
 import Layout from '../layouts/Layout.astro';
 import { q, sanityClient } from '../lib/sanity';
 const resources = await sanityClient.fetch(q.resources);
-const groups = ['Everyone', 'Young people', 'Parents & families', 'After a loss'];
+const by = (g: string) => resources.filter((r: any) => (r.audience ?? 'Everyone') === g);
+const christian = by('Christian counseling');
+// Order matters: Christian care leads; the LGBTQ+ line stays, lower down, under a neutral heading.
+const groups = [
+	{ key: 'Everyone', title: 'Crisis lines, for anyone', tone: 'gold' },
+	{ key: 'Parents & families', title: 'For parents and families', tone: 'blush' },
+	{ key: 'Young people', title: 'For teens and young adults', tone: 'sand' },
+	{ key: 'After a loss', title: 'After a loss', tone: 'garnet' },
+	{ key: 'More support', title: 'More support', tone: 'muted' },
+];
+const tel = (n: string) => `tel:${n.replace(/[^0-9+]/g, '')}`;
+const host = (u: string) => u.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '').split('/')[0];
 ---
-<Layout title="Find help — The Endless What Ifs" description="If you or someone you love is struggling, help is available right now. Call or text 988, the Suicide & Crisis Lifeline.">
-	<section class="wrap sec sec-first">
-		<p class="eyebrow">Find help</p>
-		<h1 class="h-display">You don’t have to carry this alone</h1>
-		<p class="lede">If you are thinking about suicide, or you are worried about someone, reach out now. It is free, confidential and open every hour of every day. If someone is in immediate danger, call 911.</p>
-		<div class="now">
-			<a class="btn" href="tel:988">Call 988</a>
-			<a class="btn btn-ghost" href="sms:988">Text 988</a>
-			<a class="btn btn-ghost" href="https://988lifeline.org/chat/" rel="noopener" target="_blank">Chat online</a>
+<Layout title="Find help — The Endless What Ifs" description="If you or someone you love is struggling, help is here — Christian counseling and care, and the 988 Suicide & Crisis Lifeline, any hour of any day.">
+	<section class="help-hero">
+		<div class="wrap hero-in">
+			<p class="eyebrow">Find help</p>
+			<h1 class="h-display">You don’t have to carry this alone</h1>
+			<p class="hero-lede">If you are thinking about suicide, or you are worried about someone, reach out now. It is free, confidential and open every hour of every day. If someone is in immediate danger, call 911.</p>
+			<div class="now">
+				<a class="btn btn-gold" href="tel:988">Call 988</a>
+				<a class="btn btn-line" href="sms:988">Text 988</a>
+				<a class="btn btn-line" href="https://988lifeline.org/chat/" rel="noopener" target="_blank">Chat online</a>
+			</div>
 		</div>
 	</section>
+
+	{christian.length > 0 && (
+		<section class="paper faith">
+			<div class="wrap faith-in">
+				<p class="eyebrow">Christ-centered help</p>
+				<h2 class="h-sec ink">Counseling and care grounded in faith</h2>
+				<p class="faith-lede">Claire’s faith was part of who she was — <em>“I trust in God and I trust in me,”</em> she wrote. These counselors and communities bring that same hope into the room.</p>
+				<div class="rgrid">
+					{christian.map((r: any, i: number) => (
+						<div class={`fcard ${i === 0 ? 'lead' : ''}`}>
+							<span class="t">{r.name}</span>
+							{r.description && <p>{r.description}</p>}
+							<p class="ways">
+								{r.call && <span><b>Call</b> <a href={tel(r.call)}>{r.call}</a></span>}
+								{r.text && <span><b>Text</b> {r.text}</span>}
+								{r.url && <a href={r.url} rel="noopener" target="_blank">{host(r.url)}</a>}
+							</p>
+						</div>
+					))}
+				</div>
+			</div>
+		</section>
+	)}
+
 	{groups.map((g) => {
-		const list = resources.filter((r: any) => (r.audience ?? 'Everyone') === g);
+		const list = by(g.key);
 		return list.length > 0 && (
-			<section class="wrap sec">
-				<p class="eyebrow">{g === 'Everyone' ? 'For anyone' : `For ${g.toLowerCase()}`}</p>
+			<section class={`wrap sec grp tone-${g.tone}`}>
+				<h2 class="grp-h">{g.title}</h2>
 				<div class="rgrid">
 					{list.map((r: any) => (
-						<div class="res">
+						<div class="rcard">
 							<span class="t">{r.name}</span>
 							{r.description && <p class="muted">{r.description}</p>}
 							<p class="ways">
-								{r.call && <span><b>Call</b> <a href={`tel:${r.call.replace(/[^0-9+]/g, '')}`}>{r.call}</a></span>}
+								{r.call && <span><b>Call</b> <a href={tel(r.call)}>{r.call}</a></span>}
 								{r.text && <span><b>Text</b> {r.text}</span>}
-								{r.url && <a href={r.url} rel="noopener" target="_blank">{r.url.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '')}</a>}
+								{r.url && <a href={r.url} rel="noopener" target="_blank">{host(r.url)}</a>}
 							</p>
 						</div>
 					))}
@@ -36,13 +73,56 @@ const groups = ['Everyone', 'Young people', 'Parents & families', 'After a loss'
 			</section>
 		);
 	})}
-	<section class="wrap sec">
-		<p class="eyebrow">Your story matters</p>
-		<h2 class="h-sec">Share yours</h2>
-		<p class="lede">If Claire’s story has touched your life, Haley would be honored to hear from you. <a href="/your-story/">Share your story</a>.</p>
+
+	<section class="story-band">
+		<div class="wrap story-in">
+			<div>
+				<p class="eyebrow">Your story matters</p>
+				<h2 class="h-sec">Share yours</h2>
+				<p class="muted">If Claire’s story has touched your life, Haley would be honored to hear from you.</p>
+			</div>
+			<a class="btn" href="/your-story/">Share your story</a>
+		</div>
 	</section>
 </Layout>
+
 <style>
-	.now { display: flex; flex-wrap: wrap; gap: 12px; }
+	.help-hero { background: radial-gradient(90% 120% at 85% 0%, var(--garnet) 0%, var(--garnet-deep) 45%, var(--surface) 100%); padding: 88px 0 72px; }
+	.hero-in { display: flex; flex-direction: column; gap: 20px; }
+	.hero-in .eyebrow { color: var(--gold); }
+	.hero-lede { max-width: 60ch; font-size: 18px; color: var(--cream); opacity: .9; }
+	.now { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 6px; }
+	.btn-gold { background: var(--gold); color: var(--ground); }
+	.btn-gold:hover { background: var(--sand); }
+	.btn-line { background: transparent; box-shadow: inset 0 0 0 1px rgba(239,230,218,.5); }
+	.btn-line:hover { background: rgba(239,230,218,.08); }
+
+	.faith { padding: 72px 0 80px; }
+	.faith-in { display: flex; flex-direction: column; gap: 18px; }
+	.ink { color: var(--ink); }
+	.faith-lede { max-width: 62ch; color: var(--ink-soft); font-size: 17px; }
 	.rgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 16px; }
+	.fcard { display: flex; flex-direction: column; gap: 8px; padding: 24px; background: #FBF6EE; border: 1px solid rgba(42,33,29,.1); border-top: 3px solid var(--garnet); border-radius: 3px; color: var(--ink-soft); font-size: 15.5px; }
+	.fcard.lead { border-top-color: var(--gold); background: #FFFDF8; }
+	.fcard .t { font-family: var(--display); font-size: 26px; color: var(--ink); line-height: 1.15; }
+	.fcard .ways b { color: var(--garnet-deep); }
+	.ways { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 15px; margin-top: auto; padding-top: 6px; }
+	.ways b { font-weight: 600; margin-right: 4px; }
+
+	.grp { gap: 18px; }
+	.grp-h { font-family: var(--display); font-size: clamp(26px, 3.4vw, 34px); display: flex; align-items: center; gap: 14px; }
+	.grp-h::before { content: ""; width: 28px; height: 2px; background: var(--tone); }
+	.rcard { display: flex; flex-direction: column; gap: 8px; padding: 24px; background: linear-gradient(to bottom, var(--surface-2), var(--surface)); border-radius: 3px; border-top: 3px solid var(--tone); }
+	.rcard .t { font-family: var(--display); font-size: 25px; }
+	.rcard .ways b { color: var(--tone); }
+	.tone-gold { --tone: var(--gold); }
+	.tone-blush { --tone: var(--blush); }
+	.tone-sand { --tone: var(--sand); }
+	.tone-garnet { --tone: var(--garnet); }
+	.tone-muted { --tone: var(--muted); }
+
+	.story-band { background: linear-gradient(to right, var(--garnet-deep), var(--surface-2)); padding: 56px 0; margin-top: 40px; }
+	.story-in { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 24px; }
+	.story-in > div { display: flex; flex-direction: column; gap: 10px; }
+	.story-in .muted { color: var(--cream); opacity: .8; }
 </style>

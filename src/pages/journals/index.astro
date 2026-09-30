@@ -18,8 +18,8 @@ const months = [...new Set(entries.map((e: any) => e.date.slice(0, 7)))] as stri
 					{entries.filter((e: any) => e.date.startsWith(m)).map((e: any) => (
 						<a class="journal-card" href={`/journals/${e.slug}/`}>
 							<span class="meta">{fmtDate(e.date)}{e.kind ? ` · ${e.kind}` : ''}</span>
-							{e.title && <span class="h-card">{e.title}</span>}
-							<span class="x">{e.excerpt ?? e.body.split('\n')[0].slice(0, 140)}</span>
+							<span class="x">{e.title ?? e.body.split('\n')[0].slice(0, 120)}</span>
+							<span class="more">Read the entry &rarr;</span>
 						</a>
 					))}
 				</div>
@@ -31,5 +31,6 @@ const months = [...new Set(entries.map((e: any) => e.date.slice(0, 7)))] as stri
 	.paper-page { padding-bottom: 60px; margin-bottom: -40px; }
 	.lede-ink { max-width: var(--measure); color: var(--ink-soft); font-size: 17px; }
 	.ink-sec { border-top-color: rgba(42,33,29,.14); }
+	.journal-card .more { font-size: 13px; color: var(--garnet-deep); margin-top: auto; }
 	.jgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; }
 </style>
