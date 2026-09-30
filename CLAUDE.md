@@ -65,7 +65,7 @@ The whole site is about Claire. It (1) shares Claire's story, (2) showcases Hale
 | Help | Resources (name, audience, call/text/url, order) | Sanity `resource` |
 | Help | 988 call/text/chat buttons, page intro | Static (duty-of-care, must not be editable away) |
 | Utility | Privacy, thank-you | Sanity `page` |
-| Tributes | FSU students' notes, service remembrances | Sanity `tribute` — schema ready, NOT yet loaded or rendered (names to blur first) |
+| Tributes | FSU students' notes (7 photos, names NOT blurred — Kevin 2026-09-30) + memorial service | Sanity `tribute` + `page` slug `remembered` → /remembered/ (own template) |
 
 Initial content load: `/home/deploy/projects/endless-what-ifs-site/load/load_content.py` (fixed _ids, createOrReplace). **Never re-run it once Haley is editing** — it overwrites her changes.
 
@@ -80,7 +80,6 @@ Initial content load: `/home/deploy/projects/endless-what-ifs-site/load/load_con
 - Sung texts: all 7 done with citation + source link (Kevin 2026-09-30: copyrighted words quoted in remembrance with citation; get permission if ever contested). Villanelle = Eva Dell'Acqua / Frédéric van der Elst; Come Down Angels = Undine Smith Moore arr. of the traditional spiritual; Sakura yokochō poet = Shūichi Katō
 - Confirm programme order and pianist credit with Haley
 - Duet (IMG_1629) + masterclass (IMG_7482): venue/date from Haley; not loaded
-- Tributes: blur student names on the sticky-note photos, then add a "How she's remembered" section
 - Book: ISBNs, formats, retailer links, description, excerpt (not Chapter 1)
 - Forms: Haley gets her OWN GHL sub-account under SMP (Kevin 2026-09-30, before final delivery) → set GHL_* for that location + MAILGUN_* / NOTIFY_TO on CF Pages, test a real submission
 - Sanity → CF deploy hook webhook; CORS for the live domain; domain + CF zone settings
