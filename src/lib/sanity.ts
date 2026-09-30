@@ -63,7 +63,7 @@ export const q = {
 	stages: `*[_type == "stage"] | order(coalesce(order, 999) asc, year asc){..., image${IMG}, performance->{title, "slug": slug.current}}`,
 	photos: `*[_type == "photo"] | order(coalesce(order, 999) asc, date asc){..., image${IMG}}`,
 	tributes: `*[_type == "tribute"] | order(coalesce(order, 999) asc){..., image${IMG}}`,
-	journals: `*[_type == "journalEntry"] | order(date asc){..., "slug": slug.current, pages[]${IMG}}`,
+	journals: `*[_type == "journalEntry" && visible != false] | order(coalesce(order, 999) asc, date asc){..., "slug": slug.current, pages[]${IMG}}`,
 	book: `*[_id == "book"][0]{..., cover${IMG}}`,
 	author: `*[_id == "author"][0]{..., headshot${IMG}, "pressFiles": pressFiles[]{label, "url": asset->url}}`,
 	resources: `*[_type == "resource"] | order(coalesce(order, 999) asc){...}`,

@@ -2,23 +2,31 @@
 import Layout from '../../layouts/Layout.astro';
 import { fmtDate, q, sanityClient } from '../../lib/sanity';
 const entries = await sanityClient.fetch(q.journals);
-const months = [...new Set(entries.map((e: any) => e.date.slice(0, 7)))] as string[];
+// Consecutive groups in notebook order: a series groups itself, otherwise by month.
+const label = (e: any) => e.series ?? (e.dateNote ? e.dateNote.replace(/^Not dated — /, '').replace(/^./, (c: string) => c.toUpperCase()) : fmtDate(e.date, { month: 'long', year: 'numeric' }));
+const groups: { label: string; items: any[] }[] = [];
+for (const e of entries) {
+	const l = label(e);
+	if (groups.at(-1)?.label === l) groups.at(-1)!.items.push(e);
+	else groups.push({ label: l, items: [e] });
+}
 ---
 <Layout title="Her journals — Claire Rose Goodwin" description="Pages from the journals Claire Goodwin kept in 2024 — her mornings, her nights, her goals and her values, in her own words.">
 	<div class="paper paper-page">
 		<section class="wrap sec sec-first">
 			<p class="eyebrow">Her voice</p>
 			<h1 class="h-display">The journals</h1>
-			<p class="lede-ink">In the spring of 2024, after finishing her junior year, Claire began keeping a morning journal and a night journal. She wrote down her goals, her small victories, the things she was thankful for — and signed off, again and again, <em>Now, go create your own reality!</em> These pages were chosen by her mother, Haley, and appear exactly as Claire wrote them.</p>
+			<p class="lede-ink">In the spring of 2024, after finishing her junior year, Claire began keeping a morning journal and a night journal. She wrote down her goals, her small victories, the things she was thankful for — and signed off, again and again, <em>Now, go create your own reality!</em> Her mother, Haley, has chosen to share them so that anyone who sees themselves in these pages knows they are not alone. They appear as Claire wrote them. Some entries speak about suicide; those carry a note at the top, and help is always there — <a href="tel:988">call or text 988</a>.</p>
 		</section>
-		{months.map((m) => (
+		{groups.map((g) => (
 			<section class="wrap sec ink-sec">
-				<p class="eyebrow">{fmtDate(`${m}-01`, { month: 'long', year: 'numeric' })}</p>
+				<p class="eyebrow">{g.label}</p>
 				<div class="jgrid">
-					{entries.filter((e: any) => e.date.startsWith(m)).map((e: any) => (
+					{g.items.map((e: any) => (
 						<a class="journal-card" href={`/journals/${e.slug}/`}>
-							<span class="meta">{fmtDate(e.date)}{e.kind ? ` · ${e.kind}` : ''}</span>
+							<span class="meta">{e.dateNote ?? fmtDate(e.date)}{e.kind && !e.dateNote ? ` · ${e.kind}` : ''}</span>
 							<span class="x">{e.title ?? e.body.split('\n')[0].slice(0, 120)}</span>
+							{e.contentNote && <span class="cn">Mentions {e.contentNote.includes('suicide') ? 'suicide' : 'food and calories'}</span>}
 							<span class="more">Read the entry &rarr;</span>
 						</a>
 					))}
@@ -32,5 +40,6 @@ const months = [...new Set(entries.map((e: any) => e.date.slice(0, 7)))] as stri
 	.lede-ink { max-width: var(--measure); color: var(--ink-soft); font-size: 17px; }
 	.ink-sec { border-top-color: rgba(42,33,29,.14); }
 	.journal-card .more { font-size: 13px; color: var(--garnet-deep); margin-top: auto; }
+	.journal-card .cn { font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--garnet); }
 	.jgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; }
 </style>

@@ -7,7 +7,7 @@ export async function getStaticPaths() {
 	return entries.map((e: any, i: number) => ({ params: { slug: e.slug }, props: { e, prev: entries[i - 1] ?? null, next: entries[i + 1] ?? null } }));
 }
 const { e, prev, next } = Astro.props as any;
-const date = fmtDate(e.date);
+const date = e.dateNote ?? fmtDate(e.date);
 ---
 <Layout title={`${e.title ? `${e.title} — ` : ''}${date} — Claire’s journals`} description={e.body.slice(0, 150)} ogImage={e.pages?.[0]}>
 	<div class="paper paper-page">
@@ -16,6 +16,11 @@ const date = fmtDate(e.date);
 			<p class="meta">{[date, e.kind].filter(Boolean).join(' · ')}</p>
 			<h1 class="h-sec ink jtitle">{e.title ?? date}</h1>
 		</section>
+		{e.contentNote && (
+			<aside class="wrap cnote" aria-label="Content note">
+				<p><strong>{e.contentNote}</strong> If you are struggling, you are not alone — <a href="tel:988">call or text 988</a>, any hour, or see <a href="/help/">Find help</a>.</p>
+			</aside>
+		)}
 		<section class="wrap entry">
 			<div class="journal-body">{e.body}</div>
 			{e.pages?.length > 0 && (
@@ -35,6 +40,8 @@ const date = fmtDate(e.date);
 	.paper-page { padding-bottom: 40px; margin-bottom: -40px; }
 	.plain { color: inherit; text-decoration: none; }
 	.ink { color: var(--ink); }
+	.cnote p { max-width: var(--measure); padding: 16px 20px; margin-bottom: 36px; background: #FBF6EE; border-left: 3px solid var(--garnet); color: var(--ink-soft); font-size: 15.5px; }
+	.cnote strong { color: var(--ink); }
 	.jtitle { font-style: italic; font-weight: 300; }
 	.entry { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 460px); gap: 56px; align-items: start; }
 	.scans { display: flex; flex-direction: column; gap: 18px; }

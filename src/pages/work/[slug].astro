@@ -65,8 +65,11 @@ const ld = kind === 'performance'
 				<p class="eyebrow">The words she sang</p>
 				<div class="texts">
 					{doc.originalText && <div><p class="meta">{doc.language ?? 'Original'}</p><p class="sung">{doc.originalText}</p></div>}
-					{doc.translation && <div><p class="meta">English</p><p class="sung tr">{doc.translation}</p>{doc.translationCredit && <p class="cap">{doc.translationCredit}</p>}</div>}
+					{doc.translation && <div><p class="meta">English</p><p class="sung tr">{doc.translation}</p></div>}
 				</div>
+				{(doc.translationCredit || doc.textSource) && (
+					<p class="cap cite">{doc.translationCredit}{doc.textSource && <> <a href={doc.textSource} rel="noopener" target="_blank">Source</a></>}</p>
+				)}
 			</section>
 		)}
 		{doc.notes && <section class="wrap sec"><div class="prose" set:html={rich(doc.notes)} /></section>}
@@ -85,6 +88,7 @@ const ld = kind === 'performance'
 	.texts > div { display: flex; flex-direction: column; gap: 12px; }
 	.sung { white-space: pre-line; font-family: var(--display); font-size: 21px; line-height: 1.55; color: var(--cream); }
 	.sung.tr { color: #DCD0C4; }
+	.cite { max-width: var(--measure); }
 	.pager { flex-direction: row; justify-content: space-between; }
 	.pager a { display: flex; flex-direction: column; gap: 4px; color: var(--cream); text-decoration: none; }
 	.pager a:hover .h-card { color: var(--gold); }
